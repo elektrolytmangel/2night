@@ -1,0 +1,17 @@
+[
+  {
+    "id": "1",
+    "location": {
+      "id": "1",
+      "locationName": "Bolgen Schanze"
+    },
+    "eventName": "Halloween Party",
+    "descritpion": "Halloween Party in Bolgen Schanze",
+    "artists": [
+      "Resdidents Evil"
+    ],
+    "startDateTime": "2023-10-28T21:00:00+02:00",
+    "endDateTime": "2023-10-29T04:00:00+01:00",
+    "price": "20.00"
+  }
+]
