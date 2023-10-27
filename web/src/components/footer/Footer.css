@@ -4,8 +4,8 @@
   right: 0;
   left: 0;
   display: flex;
-  justify-content: end;
-  align-items: end;
+  justify-content: flex-end;
+  align-items: flex-end;
   flex-direction: column;
   padding: 2rem;
   margin: auto;
