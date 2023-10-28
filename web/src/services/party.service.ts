@@ -26,13 +26,6 @@ export const getParties = async (
   endDate?: Date,
   signal?: AbortSignal
 ): Promise<PartyResponse> => {
-  return {
-    data: [
-      ...getFakeParties(4, new Date()),
-      ...getFakeParties(4, new Date("2023-10-26")),
-      ...getFakeParties(4),
-    ],
-  };
   try {
     const response = await axios.get<Party[]>(EVENTS_URL, { signal: signal });
     if (response.status === 200) {
