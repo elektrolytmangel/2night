@@ -7,8 +7,7 @@
   justify-content: flex-end;
   align-items: flex-end;
   flex-direction: column;
-  padding: 2rem;
-  margin: auto;
+  margin: 1rem 0.5rem 0.5rem 0;
 }
 
 .footer-text {
@@ -19,9 +18,8 @@
   margin: 0;
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 580px) {
   .footer {
     position: relative;
-    margin: 0
   }
 }
