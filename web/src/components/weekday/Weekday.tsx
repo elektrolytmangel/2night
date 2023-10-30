@@ -11,7 +11,10 @@ export const Weekday = (props: Props) => {
   });
 
   return (
-    <div className="px-2">
+    <div
+      key={props.day.toISOString()}
+      className="weekday animate__animated animate__fadeIn"
+    >
       <p className="weekday-text">{weekdayText}</p>
       <div className="d-flex gap-4 flex-column">{props.children}</div>
     </div>

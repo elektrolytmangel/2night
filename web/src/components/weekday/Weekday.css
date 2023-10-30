@@ -1,3 +1,8 @@
+.weekday {
+  padding: 0 1.5rem;
+  min-width: 300px;
+}
+
 .weekday-text {
   font-family: 'SignPainter', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
   font-size: 4em;

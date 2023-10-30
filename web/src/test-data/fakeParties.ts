@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { Party } from "../model/party";
 
-export const getFakeParties = (count: number) => {
+export const getFakeParties = (count: number, startDate?: Date) => {
   // Generate the list of Party entries
   const parties: Party[] = [];
 
@@ -17,7 +17,7 @@ export const getFakeParties = (count: number) => {
       artists: [faker.animal.bear(), faker.animal.cat()],
       musicGenre: faker.music.genre(),
       eventName: faker.commerce.productName(),
-      startDateTime: faker.date.future(),
+      startDateTime: startDate ?? faker.date.future(),
       endDateTime: faker.date.future(),
     };
 

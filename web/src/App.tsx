@@ -7,7 +7,7 @@ function App() {
     <div className="vw-100 vh-100 bg-black">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<WeeklyView dayInWeek={new Date()} />} />
+          <Route path="/" element={<WeeklyView />} />
         </Routes>
       </BrowserRouter>
     </div>
