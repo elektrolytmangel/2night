@@ -4,7 +4,7 @@ import { getFakeParties } from "../test-data/fakeParties";
 
 const EVENTS_URL =
   process.env.REACT_APP_PARTIES_URL ||
-  "https://raw.githubusercontent.com/elektrolytmangel/2night/main/web/src/data/data.json";
+  "https://raw.githubusercontent.com/elektrolytmangel/2night/party-data/data/data.json";
 
 const filterParties = (parties: Party[], startDate?: Date, endDate?: Date) => {
   if (startDate && endDate) {
