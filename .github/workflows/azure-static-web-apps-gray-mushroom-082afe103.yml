@@ -5,7 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "./web/**"
+      - "./web/**.*"
+
+  workflow_dispatch:
 
 env:
   REACT_APP_PARTIES_URL: ${{ secrets.PARTIES_URL }}
