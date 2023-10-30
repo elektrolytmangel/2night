@@ -8,23 +8,23 @@ import {
   groupByDate,
 } from "../../services/date.service";
 import { getParties } from "../../services/party.service";
-import { ErrorText } from "../error-text/ErrorText";
 import { Footer } from "../footer/Footer";
 import { Header } from "../header/Header";
 import { Loading } from "../loading/Loading";
 import { PartyCard } from "../party-card/PartyCard";
+import { TextMessage } from "../text-message/TextMessage";
 import { Weekday } from "../weekday/Weekday";
 import "./WeeklyView.css";
 
 type State = {
   date: Date;
   parties: Party[];
-  isLoading: boolean;
-  error: string;
+  isLoading: "init" | "loading" | "done";
+  message: JSX.Element | string;
 };
 
 type Action = {
-  type: "SET_DATE" | "SET_PARTIES" | "SET_LOADING" | "SET_ERROR";
+  type: "SET_DATE" | "SET_PARTIES" | "SET_LOADING" | "SET_MESSAGE";
   payload: any;
 };
 
@@ -39,16 +39,17 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         parties: action.payload,
+        message: "",
       };
     case "SET_LOADING":
       return {
         ...state,
         isLoading: action.payload,
       };
-    case "SET_ERROR":
+    case "SET_MESSAGE":
       return {
         ...state,
-        error: action.payload,
+        message: action.payload,
       };
     default:
       return state;
@@ -70,20 +71,25 @@ export const WeeklyView = () => {
   const [state, dispatch] = useReducer(reducer, {
     date: initialDate,
     parties: [],
-    isLoading: false,
-    error: "",
+    isLoading: "init",
+    message: "",
   });
 
   useEffect(() => {
     const abortController = new AbortController();
     const request = async () => {
-      dispatch({ type: "SET_LOADING", payload: true });
+      dispatch({ type: "SET_LOADING", payload: "loading" });
       const monday = getMondaFromWeekDay(state.date);
       const sunday = getSundayFromWeekDay(state.date);
       const data = await getParties(monday, sunday, abortController.signal);
       dispatch({ type: "SET_PARTIES", payload: data.data });
-      dispatch({ type: "SET_ERROR", payload: data.errorMsg });
-      dispatch({ type: "SET_LOADING", payload: false });
+      if (data.errorMsg) {
+        dispatch({ type: "SET_MESSAGE", payload: t("uups") });
+      } else if (data.data.length === 0) {
+        const msg = <span>{t("seems_calm_week")} 😴</span>;
+        dispatch({ type: "SET_MESSAGE", payload: msg });
+      }
+      dispatch({ type: "SET_LOADING", payload: "done" });
     };
 
     request();
@@ -112,12 +118,9 @@ export const WeeklyView = () => {
     <div className="weekly-view">
       <Header dayInWeek={state.date} />
       <div className="weekly-view-day-container">
-        {state.isLoading ? <Loading /> : content}
-        {state.parties.length === 0 && !state.isLoading && !state.error ? (
-          <p className="text-center basic-text">{t("seems_calm_week")}</p>
-        ) : null}
+        {state.isLoading === "loading" ? <Loading /> : content}
       </div>
-      <ErrorText errorMessage={state.error} />
+      <TextMessage>{state.message}</TextMessage>
       <Footer />
     </div>
   );

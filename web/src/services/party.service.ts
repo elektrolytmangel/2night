@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Party } from "../model/party";
-import { getFakeParties } from "../test-data/fakeParties";
 
 const EVENTS_URL =
   process.env.REACT_APP_PARTIES_URL ||

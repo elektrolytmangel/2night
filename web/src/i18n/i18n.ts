@@ -21,7 +21,7 @@ i18n
         translation: {
           without_warranty: "Infos without warranty, see ya in the club",
           uups: "Uups, something went wrong :(. Party probably already started",
-          seems_calm_week: "Seems its a calm week",
+          seems_calm_week: "Recovery time, nothing is going on this week yet",
         },
       },
       de: {
