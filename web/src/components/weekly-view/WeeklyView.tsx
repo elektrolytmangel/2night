@@ -96,7 +96,7 @@ export const WeeklyView = () => {
     return () => {
       abortController.abort();
     };
-  }, [state.date]);
+  }, [state.date, t]);
 
   const sortedData = state.parties.sort((a, b) => {
     return a.startDateTime < b.startDateTime ? -1 : 1;
