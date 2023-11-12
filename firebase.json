@@ -1,0 +1,35 @@
+{
+  "functions": {
+    "source": "functions"
+  },
+  "hosting": {
+    "public": "web/build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "hosting": {
+      "port": 5002
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true,
+    "firestore": {
+      "port": 8080
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

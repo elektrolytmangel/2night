@@ -6,6 +6,8 @@ import "./custom.scss";
 import "./i18n/i18n";
 import "./index.css";
 
+
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
