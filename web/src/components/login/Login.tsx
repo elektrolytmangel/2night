@@ -1,8 +1,7 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useForm } from "react-hook-form";
-import { auth } from "../../services/firebase.service";
 import { useState } from "react";
-import axios from "axios";
+import { useForm } from "react-hook-form";
+import { add, auth, getAll } from "../../services/firebase.service";
 
 type UserLogin = {
   email: string;
@@ -27,42 +26,29 @@ export const Login = () => {
         // ...
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        console.log(error);
       });
   };
 
-  const sendRequest = () => {
-    axios.post(
-      "http://127.0.0.1:5001/night-403820/us-central1/addParty",
-      {
-        name: "test",
-        date: "2021-10-10",
-        time: "10:00",
-        location: "test",
-        description: "test",
+  const handleRequestParties = async () => {
+    await add({
+      id: "",
+      eventName: "test",
+      description: "test",
+      startDateTime: new Date(),
+      endDateTime: new Date(),
+      location: {
+        id: "test",
+        locationName: "test",
       },
-      {
-        headers: {
-          Authorization: "Bearer " + user?.uid,
-        },
-      }
-    );
-  };
+      musicGenre: "test",
+      artists: ["test"],
+      price: "FREE",
+    });
 
-  // Retrieve the auth token for a user
-  const getUserAuthToken = async () => {
-    try {
-      // Get the user by their user ID
-
-      // Generate an auth token for the user
-      const token = auth.currentUser?.getIdToken(true);
-      console.log(token);
-      return token;
-    } catch (error) {
-      console.error("Error retrieving auth token:", error);
-      throw error;
-    }
+    await getAll().then((res) => {
+      console.log(res);
+    });
   };
 
   return (
@@ -86,7 +72,7 @@ export const Login = () => {
       <p style={{ textAlign: "center", color: "white" }}>
         {user?.displayName ?? "not logged in"}
       </p>
-      <button onClick={() => getUserAuthToken()}>Send request</button>
+      <button onClick={() => handleRequestParties()}>Send request</button>
     </div>
   );
 };
