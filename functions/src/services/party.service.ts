@@ -1,12 +1,13 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { PartyRequest, PartyResponse } from '../model/app';
+import { App } from 'firebase-admin/app';
 
 export default class PartyService {
   private collection: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
 
-  constructor() {
-    this.collection = getFirestore().collection('parties');
+  constructor(app: App) {
+    this.collection = getFirestore(app).collection('parties');
   }
 
   getParty = async (partyId: string): Promise<PartyResponse> => {

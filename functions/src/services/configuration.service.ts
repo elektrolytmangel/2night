@@ -1,10 +1,16 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { Configuration } from '../model/app';
+import { App } from 'firebase-admin/app';
 
 export default class ConfigurationService {
+  private collection: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
+
+  constructor(app: App) {
+    this.collection = getFirestore(app).collection('configuration');
+  }
+
   public async initializeConfiguration() {
-    const configurationRef = getFirestore().collection('configuration');
-    const configuration = await configurationRef.get();
+    const configuration = await this.collection.get();
     if (configuration.empty) {
       const data = {
         isActive: true,
@@ -16,13 +22,12 @@ export default class ConfigurationService {
           },
         ],
       };
-      await configurationRef.add(data);
+      await this.collection.add(data);
     }
   }
 
   public async getConfiguration(): Promise<Configuration> {
-    const configurationRef = getFirestore().collection('configuration');
-    return await configurationRef
+    return await this.collection
       .where('isActive', '==', true)
       .get()
       .then((config) => {

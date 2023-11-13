@@ -1,7 +1,9 @@
 import { initializeApp } from 'firebase-admin/app';
 import { deleteParty, getParties, getParty, postParty, putParty } from './api/party.api';
-import M from './infrastructure/ioc-module';
+import { assignUserRoles, listUsers } from './api/user.api';
+import S from './infrastructure/service-registry';
 
+// public firebase config: https://firebase.google.com/support/guides/security-checklist#understand_api_keys
 const firebaseConfig = {
   apiKey: 'AIzaSyCAC6oSF307AFVFgmDQPKP6dPFCtVIMjoI',
   authDomain: 'night-403820.firebaseapp.com',
@@ -14,7 +16,9 @@ const firebaseConfig = {
 };
 
 // Initialize the app with your service account
-initializeApp(firebaseConfig);
-M.getConfigurationService().initializeConfiguration();
+const app = initializeApp(firebaseConfig);
 
-export { deleteParty, getParties, getParty, postParty, putParty };
+// initialize services which can be accessed later from everywhere
+S.initialiazeServices(app);
+
+export { assignUserRoles, deleteParty, getParties, getParty, listUsers, postParty, putParty };

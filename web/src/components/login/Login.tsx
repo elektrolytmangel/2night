@@ -1,7 +1,7 @@
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { add, auth, getAll, update } from '../../services/firebase.service';
+import { auth, getAll, getDirect } from '../../services/firebase.service';
 
 type UserLogin = {
   email: string;
@@ -24,7 +24,7 @@ export const Login = () => {
   };
 
   const handleRequestParties = async () => {
-    await add({
+    /*await add({
       eventName: 'test',
       description: 'test',
       startDateTime: new Date(),
@@ -36,12 +36,13 @@ export const Login = () => {
       musicGenre: 'test',
       artists: ['test'],
       price: 'FREE',
-    });
+    });*/
 
     if (parties?.length > 0) {
-      await update({ ...parties[0], artists: ['Peppito'] }).then((res: any) => {
+      /*await update({ ...parties[0], artists: ['Peppito'] }).then((res: any) => {
         console.log('single request', res);
-      });
+      });*/
+      await getDirect(parties[0].id);
     }
 
     await getAll().then((res) => {
@@ -52,6 +53,7 @@ export const Login = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', margin: 'auto' }}>
+      <div id="firebaseui-auth-container"></div>
       <form
         onSubmit={handleSubmit((data) => handleLogin(data))}
         style={{ display: 'flex', flexDirection: 'column', margin: 'auto' }}
@@ -61,7 +63,9 @@ export const Login = () => {
         <button type="submit">Login</button>
       </form>
       <button onClick={() => auth.signOut()}>Logout</button>
-      <p style={{ textAlign: 'center', color: 'white' }}>{auth.currentUser?.displayName ?? 'not logged in'}</p>
+      <p style={{ textAlign: 'center', color: 'white' }}>
+        {(auth.currentUser?.displayName || auth.currentUser?.email) ?? 'not logged in'}
+      </p>
       <button onClick={() => handleRequestParties()}>Send request</button>
       <p style={{ textAlign: 'start', color: 'white' }}>{JSON.stringify(parties)}</p>
     </div>

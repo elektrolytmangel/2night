@@ -1,8 +1,9 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
-import { connectAuthEmulator, getAuth } from 'firebase/auth';
-import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { addDoc, collection, doc, getDoc, getFirestore } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Party } from '../model/party';
 
 const firebaseConfig = {
@@ -23,8 +24,9 @@ export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
 
 const functions = getFunctions(app);
-connectAuthEmulator(auth, 'http://127.0.0.1:9099');
-connectFunctionsEmulator(functions, 'localhost', 5001);
+functions.region = 'europe-west1';
+//connectAuthEmulator(auth, 'http://127.0.0.1:9099');
+// connectFunctionsEmulator(functions, 'localhost', 5001);
 
 export const get = async (id: string) => {
   const getParty = httpsCallable(functions, 'getParty');
@@ -81,4 +83,23 @@ export const remove = async (id: string) => {
     .catch((error) => {
       console.log(error);
     });
+};
+
+export const addDirect = async (partyRequest: any) => {
+  const db = getFirestore(app);
+  const docRef = await addDoc(collection(db, 'parties'), partyRequest);
+  console.log(docRef);
+  //const collection = getFirestore().collection('parties');
+};
+
+export const getDirect = async (id: string) => {
+  console.log('getDirect', id);
+  try {
+    const db = getFirestore(app);
+    const docRef = doc(db, 'parties', id);
+    const docSnap = await getDoc(docRef);
+    console.log('getDirect', docSnap);
+  } catch (error) {
+    console.log(error);
+  }
 };

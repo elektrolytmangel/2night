@@ -1,17 +1,17 @@
 import { CallableRequest, HttpsError } from 'firebase-functions/v2/https';
-import M from '../infrastructure/ioc-module';
+import S from '../infrastructure/service-registry';
 import { DeletePartyRequest, PartyRequest } from '../model/app';
 
-export const isUserActionAuthorized = async (req: CallableRequest<PartyRequest | DeletePartyRequest>) => {
+export const isUser2PartyAuthorized = async (req: CallableRequest<PartyRequest | DeletePartyRequest>) => {
   const token = req.auth?.token;
   if (!token) {
     throw new HttpsError('unauthenticated', 'No token provided');
   }
 
-  const configuration = await M.getConfigurationService().getConfiguration();
+  const configuration = await S.configurationService.getConfiguration();
   let eventLocationId: string | undefined;
   if (isDeletePartyRequest(req.data)) {
-    const party = await M.getPartyService().getParty(req.data.id);
+    const party = await S.partyService.getParty(req.data.id);
     eventLocationId = party?.location.id;
   } else {
     eventLocationId = req.data.location.id;
@@ -24,7 +24,7 @@ export const isUserActionAuthorized = async (req: CallableRequest<PartyRequest |
 
   let allowed: boolean = false;
   permission.rolesAllowed.forEach((role) => {
-    allowed = req.auth?.token?.roles?.includes(role) || allowed;
+    allowed = token.roles?.includes(role) || allowed;
   });
 
   if (!allowed) {
@@ -34,4 +34,15 @@ export const isUserActionAuthorized = async (req: CallableRequest<PartyRequest |
 
 const isDeletePartyRequest = (obj: any): obj is DeletePartyRequest => {
   return obj.id !== undefined;
+};
+
+export const isAdminUser = async (req: CallableRequest<any>) => {
+  const token = req.auth?.token;
+  if (!token) {
+    throw new HttpsError('unauthenticated', 'No token provided');
+  }
+
+  if (!token.roles?.includes('admin')) {
+    throw new HttpsError('permission-denied', 'No permission for this action');
+  }
 };

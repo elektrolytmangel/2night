@@ -37,3 +37,13 @@ export interface Configuration {
   isActive: boolean;
   eventLocations: EventLocationPermission[];
 }
+
+export interface ListUserRequest {
+  maxResults: number;
+  pageToken: string;
+}
+
+export interface AssignUserRoleRequest {
+  userId: string;
+  roles: string[];
+}
