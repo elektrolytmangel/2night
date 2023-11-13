@@ -18,4 +18,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm install -g firebase-tools
-      - run: firebase login && firebase deploy --only functions
+      - run: firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }}
