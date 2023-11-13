@@ -1,7 +1,7 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { add, auth, getAll } from "../../services/firebase.service";
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { add, auth, getAll, update } from '../../services/firebase.service';
 
 type UserLogin = {
   email: string;
@@ -9,21 +9,14 @@ type UserLogin = {
 };
 
 export const Login = () => {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm<UserLogin>();
-  const [user, setUser] = useState<any>(null);
+  const { handleSubmit, register } = useForm<UserLogin>();
+  const [parties, setParties] = useState<any>(null);
 
   const handleLogin = (data: UserLogin) => {
     const { email, password } = data;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        setUser(user);
-        // ...
+        console.log(userCredential.user);
       })
       .catch((error) => {
         console.log(error);
@@ -32,47 +25,45 @@ export const Login = () => {
 
   const handleRequestParties = async () => {
     await add({
-      id: "",
-      eventName: "test",
-      description: "test",
+      eventName: 'test',
+      description: 'test',
       startDateTime: new Date(),
       endDateTime: new Date(),
       location: {
-        id: "test",
-        locationName: "test",
+        id: '25',
+        locationName: 'SLF',
       },
-      musicGenre: "test",
-      artists: ["test"],
-      price: "FREE",
+      musicGenre: 'test',
+      artists: ['test'],
+      price: 'FREE',
     });
+
+    if (parties?.length > 0) {
+      await update({ ...parties[0], artists: ['Peppito'] }).then((res: any) => {
+        console.log('single request', res);
+      });
+    }
 
     await getAll().then((res) => {
       console.log(res);
+      setParties(res);
     });
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", margin: "auto" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', margin: 'auto' }}>
       <form
         onSubmit={handleSubmit((data) => handleLogin(data))}
-        style={{ display: "flex", flexDirection: "column", margin: "auto" }}
+        style={{ display: 'flex', flexDirection: 'column', margin: 'auto' }}
       >
-        <input
-          placeholder="email"
-          type="email"
-          {...register("email", { required: true })}
-        />
-        <input
-          placeholder="password"
-          type="password"
-          {...register("password", { required: true })}
-        />
+        <input placeholder="email" type="email" {...register('email', { required: true })} />
+        <input placeholder="password" type="password" {...register('password', { required: true })} />
         <button type="submit">Login</button>
       </form>
-      <p style={{ textAlign: "center", color: "white" }}>
-        {user?.displayName ?? "not logged in"}
-      </p>
+      <button onClick={() => auth.signOut()}>Logout</button>
+      <p style={{ textAlign: 'center', color: 'white' }}>{auth.currentUser?.displayName ?? 'not logged in'}</p>
       <button onClick={() => handleRequestParties()}>Send request</button>
+      <p style={{ textAlign: 'start', color: 'white' }}>{JSON.stringify(parties)}</p>
     </div>
   );
 };

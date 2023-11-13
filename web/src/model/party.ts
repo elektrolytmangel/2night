@@ -1,5 +1,5 @@
 export interface Party {
-  id: string;
+  id?: string;
   location: EventLocation;
   eventName: string;
   description: string;
