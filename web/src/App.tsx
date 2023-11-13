@@ -3,6 +3,7 @@ import './App.css';
 import { Add } from './components/add/Add';
 import { Admin } from './components/admin/Admin';
 import { Login } from './components/login/Login';
+import { PasswordForgot } from './components/password-forgot/PasswordForgot';
 import { Register } from './components/register/Register';
 import { WeeklyView } from './components/weekly-view/WeeklyView';
 
@@ -14,8 +15,9 @@ function App() {
           <Route path="/" element={<WeeklyView />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Register" element={<Register />} />
+          <Route path="/PasswordForgot" element={<PasswordForgot />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/add" element={<Add />} />
+          <Route path="/add" element={<Add />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -3,6 +3,7 @@ import { auth } from '../../services/firebase.service';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { TextField } from '../form/text-field/TextField';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 type UserRegsiter = {
   displayName: string;
@@ -13,6 +14,7 @@ type UserRegsiter = {
 
 export const Register = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const {
     handleSubmit,
     register,
@@ -24,18 +26,19 @@ export const Register = () => {
       const userCredentials = await createUserWithEmailAndPassword(auth, data.email, data.password);
       sendEmailVerification(userCredentials.user);
       updateProfile(userCredentials.user, { displayName: data.displayName });
+      navigate('/admin');
     } catch (error) {}
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', margin: 'auto', textAlign: 'center' }}>
-      <p className="fs-2 text-primary">{t('register')}</p>
+      <p className="fs-2 text-primary">{t('sign_up')}</p>
       <form
         onSubmit={handleSubmit((data) => onHandleSubmit(data))}
-        style={{ display: 'flex', flexDirection: 'column', margin: 'auto', textAlign: 'start' }}
+        style={{ display: 'flex', flexDirection: 'column', margin: 'auto', textAlign: 'start', gap: '0.5rem' }}
       >
         <TextField
-          label={t('displayName') + ' *'}
+          label={t('name') + ' *'}
           name="displayName"
           type="text"
           register={register('displayName', { required: true })}
@@ -56,7 +59,7 @@ export const Register = () => {
           errors={errors}
         />
         <TextField
-          label={t('repeatPassword') + ' *'}
+          label={t('repeat_password') + ' *'}
           name="repeatPassword"
           type="password"
           register={register('repeatPassword', {
@@ -68,7 +71,7 @@ export const Register = () => {
           errors={errors}
         />
         <button className="btn btn-primary mt-3" type="submit">
-          Submit
+          {t('sign_up')}
         </button>
       </form>
     </div>
