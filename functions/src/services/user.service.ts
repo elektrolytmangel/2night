@@ -25,4 +25,12 @@ export class UserService {
       throw new HttpsError('internal', error.message);
     }
   };
+
+  public assignAdminUser = async (uid: string) => {
+    try {
+      await this.auth.setCustomUserClaims(uid, { roles: ['admin'] });
+    } catch (error: any) {
+      throw new HttpsError('internal', error.message);
+    }
+  };
 }

@@ -21,4 +21,6 @@ const app = initializeApp(firebaseConfig);
 // initialize services which can be accessed later from everywhere
 S.initialiazeServices(app);
 
+S.userService.assignAdminUser('RRQorsko63SJ4PeOXtRHv1q6cA52');
+
 export { assignUserRoles, deleteParty, getParties, getParty, listUsers, postParty, putParty };

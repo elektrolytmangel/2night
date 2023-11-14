@@ -5,7 +5,7 @@ import { isAdminUser } from '../services/user-auth.service';
 import { globalConfig } from './global-api.config';
 
 export const listUsers = onCall(globalConfig, async (req: CallableRequest<ListUserRequest>) => {
-  //await isAdminUser(req);
+  await isAdminUser(req);
   return await S.userService.listUsers(req.data);
 });
 
