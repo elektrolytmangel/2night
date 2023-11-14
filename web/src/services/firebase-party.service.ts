@@ -1,6 +1,6 @@
-import { httpsCallable } from "firebase/functions";
-import { Party } from "../model/party";
-import { functions } from "./firebase.service";
+import { httpsCallable } from 'firebase/functions';
+import { Party } from '../model/app';
+import { functions } from './firebase.service';
 
 export const get = async (id: string) => {
   const getParty = httpsCallable(functions, 'getParty');

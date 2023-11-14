@@ -1,6 +1,6 @@
-import React from "react";
-import { Party } from "../../model/party";
-import "./PartyCard.css";
+import React from 'react';
+import { Party } from '../../model/app';
+import './PartyCard.css';
 
 const formatHour = (inputDate: Date) => {
   if (!inputDate) {
@@ -8,12 +8,9 @@ const formatHour = (inputDate: Date) => {
   }
   const date = new Date(inputDate);
   if (date.getMinutes() === 0) {
-    return date.getHours().toString().padStart(2, "0");
+    return date.getHours().toString().padStart(2, '0');
   } else {
-    return `${date.getHours().toString().padStart(2, "0")}:${date
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   }
 };
 
@@ -28,7 +25,7 @@ export const PartyCard: React.FC<Props> = (props) => {
   const timeContent = [startTime, endTime]
     .filter((x) => x !== null)
     .map((x) => `${x}H`)
-    .join(" - ");
+    .join(' - ');
   return (
     <div className="d-flex flex-column" key={props.party.id}>
       <p className="basic-text">{props.party.eventName}</p>

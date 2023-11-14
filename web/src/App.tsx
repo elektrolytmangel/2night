@@ -1,7 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { Add } from './components/add/Add';
 import { Admin } from './components/admin/Admin';
+import { Add } from './components/admin/add/Add';
+import { UserManagement } from './components/admin/manager-users/UserManagement';
 import { Login } from './components/login/Login';
 import { PasswordForgot } from './components/password-forgot/PasswordForgot';
 import { Register } from './components/register/Register';
@@ -17,7 +18,8 @@ function App() {
           <Route path="/Register" element={<Register />} />
           <Route path="/PasswordForgot" element={<PasswordForgot />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/add" element={<Add />} />
+          <Route path="/admin/usermanagement" element={<UserManagement />} />
+          <Route path="/admin/eventmanagement" element={<Add />} />
         </Routes>
       </BrowserRouter>
     </div>

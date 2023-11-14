@@ -1,3 +1,5 @@
+import { User } from 'firebase/auth';
+
 export interface Party {
   id?: string;
   location: EventLocation;
@@ -13,4 +15,10 @@ export interface Party {
 export interface EventLocation {
   id: string;
   locationName: string;
+}
+
+export interface AppUser extends User {
+  customClaims?: {
+    roles?: string[];
+  };
 }

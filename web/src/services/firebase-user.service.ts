@@ -1,20 +1,32 @@
+import { User } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from './firebase.service';
 
-export const list = async () => {
+export interface ListUserRequest {
+  maxResults: number;
+  pageToken: string;
+}
+
+interface ListUserResponse {
+  users: User[];
+  pageToken: string;
+}
+
+export const list = async (req: ListUserRequest) => {
   const listUsers = httpsCallable(functions, 'listUsers');
-  return await listUsers()
+  return await listUsers(req)
     .then((result) => {
-      return result.data;
+      return result.data as ListUserResponse;
     })
     .catch((error) => {
       console.log(error);
+      return null;
     });
 };
 
-export const assignRoles = async (uid: string, roles: string[]) => {
+export const assignRoles = async (userId: string, roles: string[]) => {
   const assignUserRoles = httpsCallable(functions, 'assignUserRoles');
-  return await assignUserRoles({ uid, roles })
+  return await assignUserRoles({ userId, roles })
     .then((result) => {
       return result.data;
     })
