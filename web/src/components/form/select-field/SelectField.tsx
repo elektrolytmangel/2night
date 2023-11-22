@@ -1,5 +1,5 @@
 type Props = {
-  label: string;
+  label?: string;
   name: string;
   multiple: boolean;
   options: { key: string; displayText: string }[];
@@ -19,7 +19,7 @@ export const SelectField = (props: Props) => {
 
   return (
     <div>
-      <label htmlFor={props.name} className="form-label text-primary ">
+      <label htmlFor={props.name} className="form-label text-primary" style={{ display: !props.label ? 'none' : '' }}>
         {props.label}
       </label>
       <select

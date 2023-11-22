@@ -1,9 +1,11 @@
 import { useEffect, useReducer, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { AppUser } from '../../../../model/app';
+import { AppUser, Configuration } from '../../../../model/app';
 import { list } from '../../../../services/firebase-user.service';
 import { UserForm } from '../user-form/UserForm';
+import './UserList.css';
+import { getConfiguration } from '../../../../services/firebase-configuration.service';
 
 type UserAction = {
   type: string;
@@ -15,9 +17,16 @@ type State = {
   pageNumber: number;
   pageUsers: AppUser[];
   nextPageToken?: string;
+  configuration: Configuration;
 };
 
-const initialState: State = { resultsOnPage: 10, pageNumber: 1, pageUsers: [], nextPageToken: '0' };
+const initialState: State = {
+  resultsOnPage: 10,
+  pageNumber: 1,
+  pageUsers: [],
+  nextPageToken: '0',
+  configuration: { id: '', isActive: false, eventLocations: [] },
+};
 
 const reducer = (state: State, action: UserAction): State => {
   switch (action.type) {
@@ -35,6 +44,11 @@ const reducer = (state: State, action: UserAction): State => {
       return {
         ...state,
         nextPageToken: action.payload,
+      };
+    case 'SET_CONFIGURATION':
+      return {
+        ...state,
+        configuration: action.payload,
       };
     default:
       return state;
@@ -56,18 +70,29 @@ export const UserList = () => {
     listUsers();
   }, [state.nextPageToken, state.resultsOnPage]);
 
+  useEffect(() => {
+    const loadConfig = async () => {
+      const config = await getConfiguration();
+      if (config) {
+        dispatch({ type: 'SET_CONFIGURATION', payload: config });
+      }
+    };
+
+    loadConfig();
+  }, []);
+
   const handleUserUpdated = () => {
     setEditUser(undefined);
     dispatch({ type: 'SET_NEXT_PAGE_TOKEN', payload: null });
   };
 
-  const userContent = state.pageUsers.map((user) => {
+  const userContent = state.pageUsers?.map((user) => {
     return (
       <tr key={user.uid} style={{ textAlign: 'start' }}>
-        <td>{user.uid}</td>
+        <td className="user-list-mobile-hidden">{user.uid}</td>
         <td>{user.displayName ?? 'n/A'}</td>
         <td>{user.email}</td>
-        <td>{user.metadata.lastSignInTime}</td>
+        <td className="user-list-mobile-hidden">{user.metadata.lastSignInTime}</td>
         <td>{user.customClaims ? JSON.stringify(user.customClaims?.roles, null, ' ') : 'n/A'}</td>
         <td>
           <button className="btn btn-primary" onClick={() => setEditUser(user)}>
@@ -78,22 +103,27 @@ export const UserList = () => {
     );
   });
 
+  const roles = [...new Set(state.configuration.eventLocations.flatMap((x) => x.rolesAllowed))];
   return (
     <div>
-      <table className="table table-dark table-striped table-hover">
+      <table className="table table-dark table-striped table-hover table-responsive">
         <thead>
           <tr style={{ textAlign: 'start' }}>
-            <th scope="col">{t('uid')}</th>
+            <th scope="col" className="user-list-mobile-hidden ">
+              {t('uid')}
+            </th>
             <th scope="col">{t('display_name')}</th>
             <th scope="col">{t('email')}</th>
-            <th scope="col">{t('last_login')}</th>
+            <th scope="col" className="user-list-mobile-hidden">
+              {t('last_login')}
+            </th>
             <th scope="col">{t('roles')}</th>
             <th scope="col">{t('actions')}</th>
           </tr>
         </thead>
         <tbody>{userContent}</tbody>
       </table>
-      <Modal show={editUser !== undefined} onHide={() => setEditUser(undefined)} >
+      <Modal show={editUser !== undefined} onHide={() => setEditUser(undefined)}>
         <div
           style={{
             display: 'flex',
@@ -111,7 +141,7 @@ export const UserList = () => {
             aria-label={t('close')}
             style={{ position: 'absolute', top: '1rem', right: '1rem' }}
           ></button>
-          <UserForm user={editUser} onUserUpdated={() => handleUserUpdated()} />
+          <UserForm user={editUser} onUserUpdated={() => handleUserUpdated()} roles={roles} />
         </div>
       </Modal>
     </div>

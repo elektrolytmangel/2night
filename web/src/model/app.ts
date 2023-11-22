@@ -22,3 +22,13 @@ export interface AppUser extends User {
     roles?: string[];
   };
 }
+
+export interface EventLocationPermission extends EventLocation {
+  rolesAllowed: string[];
+}
+
+export interface Configuration {
+  id: string;
+  isActive: boolean;
+  eventLocations: EventLocationPermission[];
+}

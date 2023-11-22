@@ -1,0 +1,5 @@
+@media screen and (max-width: 900px) {
+  .user-list-mobile-hidden {
+    display: none;
+  }
+}

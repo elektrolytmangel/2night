@@ -11,7 +11,7 @@ export const Admin = () => {
     const checkIfAdmin = async () => {
       await auth.authStateReady();
       const token = await auth.currentUser?.getIdTokenResult(true);
-      setIsAdmin((token?.claims.roles as string[]).includes('admin'));
+      setIsAdmin((token?.claims.roles as string[])?.includes('admin'));
     };
     checkIfAdmin();
   }, []);

@@ -14,6 +14,7 @@ interface UserFormData {
 
 type Props = {
   user?: AppUser;
+  roles: string[];
   onUserUpdated: () => void;
 };
 
@@ -62,10 +63,9 @@ export const UserForm = (props: Props) => {
           register={register('roles')}
           multiple={true}
           errors={errors}
-          options={[
-            { key: '24', displayText: 'slf' },
-            { key: 'admin', displayText: 'admin' },
-          ]}
+          options={props.roles.map((x) => {
+            return { key: x, displayText: x };
+          })}
         />
         <button className="btn btn-primary" type="submit">
           {t('save')}

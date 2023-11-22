@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase-admin/app';
 import { deleteParty, getParties, getParty, postParty, putParty } from './api/party.api';
 import { assignUserRoles, listUsers } from './api/user.api';
 import S from './infrastructure/service-registry';
+import { getConfiguration, postConfiguration, putConfiguration } from './api/configuration.api';
 
 // public firebase config: https://firebase.google.com/support/guides/security-checklist#understand_api_keys
 const firebaseConfig = {
@@ -21,6 +22,18 @@ const app = initializeApp(firebaseConfig);
 // initialize services which can be accessed later from everywhere
 S.initialiazeServices(app);
 
-S.userService.assignAdminUser('RRQorsko63SJ4PeOXtRHv1q6cA52');
+//S.userService.assignAdminUser('RRQorsko63SJ4PeOXtRHv1q6cA52');
+S.configurationService.initializeConfiguration();
 
-export { assignUserRoles, deleteParty, getParties, getParty, listUsers, postParty, putParty };
+export {
+  assignUserRoles,
+  deleteParty,
+  getParties,
+  getParty,
+  listUsers,
+  postParty,
+  putParty,
+  getConfiguration,
+  postConfiguration,
+  putConfiguration,
+};

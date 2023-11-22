@@ -34,6 +34,7 @@ export interface EventLocationPermission extends EventLocation {
 }
 
 export interface Configuration {
+  id: string;
   isActive: boolean;
   eventLocations: EventLocationPermission[];
 }

@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { getAnalytics } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFunctions } from 'firebase/functions';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCAC6oSF307AFVFgmDQPKP6dPFCtVIMjoI',
@@ -23,6 +23,7 @@ export const auth = getAuth(app);
 export const functions = getFunctions(app);
 functions.region = 'europe-west1';
 
-//connectAuthEmulator(auth, 'http://127.0.0.1:9099');
-// connectFunctionsEmulator(functions, 'localhost', 5001);
-
+if (process.env.NODE_ENV === 'development') {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099');
+  connectFunctionsEmulator(functions, 'localhost', 5001);
+}
