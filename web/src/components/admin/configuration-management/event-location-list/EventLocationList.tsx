@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Configuration, EventLocationPermission } from '../../../../model/app';
@@ -24,22 +24,33 @@ export const EventLocationList = (props: Props) => {
   } = useFieldArray({
     control,
     name: 'eventLocations',
+    keyName: 'fieldId',
   });
 
   const eventLocationContent = eventLocations?.map((location, index) => {
     const rolesAllowed = getValues(`eventLocations.${index}.rolesAllowed`)
       ? JSON.stringify(getValues(`eventLocations.${index}.rolesAllowed`), null, ' ')
       : 'n/A';
+    const isAdminOnlyLocation = location.rolesAllowed.includes('admin') && location.rolesAllowed.length === 1;
     return (
       <tr key={location.id} style={{ textAlign: 'start' }}>
         <td>{getValues(`eventLocations.${index}.id`)}</td>
         <td>{getValues(`eventLocations.${index}.locationName`)}</td>
         <td>{rolesAllowed}</td>
         <td style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="btn btn-primary" onClick={() => setEditLocation({ ...location, index })}>
+          <button
+            className="btn btn-primary"
+            onClick={() => setEditLocation({ ...location, index })}
+            disabled={isAdminOnlyLocation}
+          >
             {t('edit')}
           </button>
-          <button type="button" className="btn btn-outline-primary" onClick={() => remove(index)}>
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            onClick={() => remove(index)}
+            disabled={isAdminOnlyLocation}
+          >
             {t('remove')}
           </button>
         </td>
@@ -47,19 +58,26 @@ export const EventLocationList = (props: Props) => {
     );
   });
 
+  const nextId = eventLocations.map((x) => parseInt(x.id)).reduce((a, b) => (a - b > 0 ? a : b), 1) + 1;
   return (
-    <div>
+    <>
       <table className="table table-dark table-striped table-hover table-responsive">
         <thead>
           <tr style={{ textAlign: 'start' }}>
             <th scope="col">{t('id')}</th>
             <th scope="col">{t('location_name')}</th>
             <th scope="col">{t('roles_allowed')}</th>
-            <th scope="col">
-              {t('actions')}{' '}
+            <th scope="col" style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
+              {t('actions')}
               <button
                 className="btn btn-outline-primary"
-                onClick={() => append({ id: '', locationName: '', rolesAllowed: [] })}
+                onClick={() =>
+                  append({
+                    id: `${nextId}`,
+                    locationName: '',
+                    rolesAllowed: [],
+                  })
+                }
               >
                 {t('add')}
               </button>
@@ -94,6 +112,6 @@ export const EventLocationList = (props: Props) => {
           />
         </div>
       </Modal>
-    </div>
+    </>
   );
 };

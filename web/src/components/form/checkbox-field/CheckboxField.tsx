@@ -1,8 +1,10 @@
+import { ErrorText } from '../error-text/ErrorText';
+
 type Props = {
   label?: string;
   name: string;
   register: any;
-  errors: any;
+  errors?: any;
   disabled?: boolean;
 };
 
@@ -25,7 +27,7 @@ export const CheckboxField = (props: Props) => {
           {props.label}
         </label>
       </div>
-      {props.errors[props.name] && <span>{props.errors[props.name].message}</span>}
+      <ErrorText errors={props.errors} name={props.name} />
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { auth } from '../../services/firebase.service';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { TextField } from '../form/text-field/TextField';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 type UserRegsiter = {
   displayName: string;
@@ -41,21 +41,21 @@ export const Register = () => {
           label={t('name') + ' *'}
           name="displayName"
           type="text"
-          register={register('displayName', { required: true })}
+          register={register('displayName', { required: t('field_required') })}
           errors={errors}
         />
         <TextField
           label={t('email') + ' *'}
           name="email"
           type="email"
-          register={register('email', { required: true })}
+          register={register('email', { required: t('field_required') })}
           errors={errors}
         />
         <TextField
           label={t('password') + ' *'}
           name="password"
           type="password"
-          register={register('password', { required: true })}
+          register={register('password', { required: t('field_required') })}
           errors={errors}
         />
         <TextField
@@ -63,7 +63,7 @@ export const Register = () => {
           name="repeatPassword"
           type="password"
           register={register('repeatPassword', {
-            required: true,
+            required: t('field_required'),
             validate: (value) => {
               return getValues('password') === value || t('passwords_dont_match');
             },
@@ -73,6 +73,9 @@ export const Register = () => {
         <button className="btn btn-primary mt-3" type="submit">
           {t('sign_up')}
         </button>
+        <Link to="/login" className="btn btn-outline-primary">
+          {t('back_to_login')}
+        </Link>
       </form>
     </div>
   );

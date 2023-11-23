@@ -3,7 +3,7 @@ export interface Party {
   location: EventLocation;
   eventName: string;
   description: string;
-  artists: string[];
+  artists: string;
   musicGenre: string;
   startDateTime: Date;
   endDateTime: Date;

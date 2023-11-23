@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Configuration } from '../../../model/app';
 import { getConfiguration, updateConfiguration } from '../../../services/firebase-configuration.service';
 import { CheckboxField } from '../../form/checkbox-field/CheckboxField';
 import { EventLocationList } from './event-location-list/EventLocationList';
-import { RoleForm } from './role-form/RoleForm';
+import { RoleManagement } from './role-management/RoleManagement';
 
 const getInitialConfiguration = async (): Promise<Configuration> => {
   const config = await getConfiguration();
@@ -24,7 +23,6 @@ const getInitialConfiguration = async (): Promise<Configuration> => {
 export const ConfigurationManagement = () => {
   const { t } = useTranslation();
   const [roles, setRoles] = useState<string[]>([]);
-  const [showAddRoleForm, setShowAddRoleForm] = useState(false);
   const methods = useForm<Configuration>({ defaultValues: getInitialConfiguration });
   const {
     handleSubmit,
@@ -66,16 +64,11 @@ export const ConfigurationManagement = () => {
         }}
       >
         <p className="fs-1 text-primary">{t('configuration')}</p>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <p className="text-primary">
-            {t('available_roles')}: {JSON.stringify(roles)}
-          </p>
-          <button className="btn btn-outline-primary" onClick={() => setShowAddRoleForm(true)}>
-            {t('add_role')}
-          </button>
+        <div style={{ width: '100%' }}>
+          <RoleManagement roles={roles} setRoles={setRoles} />
         </div>
-        <form onSubmit={handleSubmit((data) => onHandleSubmit(data))}>
-          <p className="fs-2 text-primary">{t('event_locations')}</p>
+        <form onSubmit={handleSubmit((data) => onHandleSubmit(data))} style={{ width: '100%' }}>
+          <p className="fs-3 text-primary">{t('event_locations')}</p>
           <EventLocationList roles={roles} />
           <CheckboxField
             label={t('is_active')}
@@ -84,31 +77,10 @@ export const ConfigurationManagement = () => {
             errors={errors}
             disabled
           />
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-primary mt-2">
             {t('save')}
           </button>
         </form>
-        <Modal show={showAddRoleForm} onHide={() => setShowAddRoleForm(false)}>
-          <div
-            style={{
-              display: 'flex',
-              padding: '1rem',
-              backgroundColor: 'black',
-              border: '1px solid var(--bs-primary)',
-              borderRadius: '8px',
-            }}
-            data-bs-theme="dark"
-          >
-            <button
-              type="button"
-              className="btn-close"
-              onClick={() => setShowAddRoleForm(false)}
-              aria-label={t('close')}
-              style={{ position: 'absolute', top: '1rem', right: '1rem' }}
-            ></button>
-            <RoleForm initalRoles={roles} setRoles={(r) => setRoles(r)} />
-          </div>
-        </Modal>
       </div>
     </FormProvider>
   );

@@ -6,10 +6,11 @@ export const get = async (id: string) => {
   const getParty = httpsCallable(functions, 'getParty');
   return await getParty({ id })
     .then((result) => {
-      return result.data;
+      return result.data as Party;
     })
     .catch((error) => {
       console.log(error);
+      return null;
     });
 };
 
@@ -17,10 +18,11 @@ export const getAll = async () => {
   const getParties = httpsCallable(functions, 'getParties');
   return await getParties()
     .then((result) => {
-      return result.data;
+      return result.data as Party[];
     })
     .catch((error) => {
       console.log(error);
+      return [];
     });
 };
 

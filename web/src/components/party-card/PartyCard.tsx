@@ -31,11 +31,9 @@ export const PartyCard: React.FC<Props> = (props) => {
       <p className="basic-text">{props.party.eventName}</p>
       <p className="basic-text">{props.party.location.locationName}</p>
       <p className="basic-text">{timeContent}</p>
-      {props.party.artists.map((artist, index) => (
-        <p key={index} className="basic-text">
-          {artist}
-        </p>
-      ))}
+      <p className="basic-text" style={{ whiteSpace: 'pre-wrap' }}>
+        {props.party.artists}
+      </p>
     </div>
   );
 };

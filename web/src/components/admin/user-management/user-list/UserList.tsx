@@ -1,11 +1,11 @@
 import { useEffect, useReducer, useState } from 'react';
-import { Modal } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 import { useTranslation } from 'react-i18next';
 import { AppUser, Configuration } from '../../../../model/app';
+import { getConfiguration } from '../../../../services/firebase-configuration.service';
 import { list } from '../../../../services/firebase-user.service';
 import { UserForm } from '../user-form/UserForm';
 import './UserList.css';
-import { getConfiguration } from '../../../../services/firebase-configuration.service';
 
 type UserAction = {
   type: string;

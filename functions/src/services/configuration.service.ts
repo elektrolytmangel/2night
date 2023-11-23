@@ -3,6 +3,17 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { Configuration } from '../model/app';
 
+const initalState = {
+  isActive: true,
+  eventLocations: [
+    {
+      id: '0',
+      locationName: 'Admin - All Locations',
+      rolesAllowed: ['admin'],
+    },
+  ],
+};
+
 export default class ConfigurationService {
   private collection: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
 
@@ -13,17 +24,7 @@ export default class ConfigurationService {
   public async initializeConfiguration() {
     const configuration = await this.collection.get();
     if (configuration.empty) {
-      const data = {
-        isActive: true,
-        eventLocations: [
-          {
-            id: '0',
-            locationName: 'HxGN Dachterrasse',
-            rolesAllowed: ['hxgn'],
-          },
-        ],
-      };
-      await this.collection.add(data);
+      await this.collection.add(initalState);
     }
   }
 
@@ -45,9 +46,10 @@ export default class ConfigurationService {
 
   public async upateConfiguration(req: Configuration): Promise<Configuration> {
     try {
-      const party = req;
-      await this.collection.doc(req.id).set(party);
-      return { ...party, id: req.id };
+      const config = req;
+      this.ensureAdminLocation(config);
+      await this.collection.doc(req.id).set(config);
+      return { ...config, id: req.id };
     } catch (error: any) {
       throw new HttpsError('internal', error.message);
     }
@@ -56,10 +58,25 @@ export default class ConfigurationService {
   public async createConfiguration(req: Configuration): Promise<Configuration> {
     try {
       const config = req;
+      this.ensureAdminLocation(config);
       const doc = await this.collection.add(config);
       return { ...config, id: doc.id };
     } catch (error: any) {
       throw new HttpsError('internal', error.message);
+    }
+  }
+
+  private ensureAdminLocation(config: Configuration) {
+    const initalAdminLocation = initalState.eventLocations[0];
+    if (
+      !config.eventLocations.find(
+        (x) =>
+          x.id === initalAdminLocation.id &&
+          x.locationName === initalAdminLocation.locationName &&
+          x.rolesAllowed.includes('admin')
+      )
+    ) {
+      config.eventLocations = [...config.eventLocations, initalState.eventLocations[0]];
     }
   }
 }

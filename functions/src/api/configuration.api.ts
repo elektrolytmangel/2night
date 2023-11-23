@@ -1,11 +1,11 @@
 import { CallableRequest, HttpsError, onCall } from 'firebase-functions/v2/https';
 import S from '../infrastructure/service-registry';
 import { Configuration } from '../model/app';
-import { isAdminUser } from '../services/user-auth.service';
+import { isAdminUser, isUserAuthenticated } from '../services/user-auth.service';
 import { globalConfig } from './global-api.config';
 
 export const getConfiguration = onCall(globalConfig, async (req: CallableRequest) => {
-  await isAdminUser(req);
+  await isUserAuthenticated(req);
   return await S.configurationService.getConfiguration();
 });
 

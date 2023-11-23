@@ -1,10 +1,11 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Admin } from './components/admin/Admin';
-import { Add } from './components/admin/add/Add';
 import { AdminLayout } from './components/admin/admin-layout/AdminLayout';
 import { ConfigurationManagement } from './components/admin/configuration-management/ConfigurationManagement';
+import { EventManagement } from './components/admin/event-management/EventManagement';
 import { UserManagement } from './components/admin/user-management/UserManagement';
+import { Authenticated } from './components/authenticated/Authenticated';
 import { Login } from './components/login/Login';
 import { PasswordForgot } from './components/password-forgot/PasswordForgot';
 import { Register } from './components/register/Register';
@@ -20,10 +21,39 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/passwordforgot" element={<PasswordForgot />} />
           <Route path="/admin" element={<AdminLayout />}>
-            <Route index path="" element={<Admin />} />
-            <Route path="usermanagement" element={<UserManagement />} />
-            <Route path="eventmanagement" element={<Add />} />
-            <Route path="configuration" element={<ConfigurationManagement />} />
+            <Route
+              index
+              path=""
+              element={
+                <Authenticated redirectToLogin>
+                  <Admin />
+                </Authenticated>
+              }
+            />
+            <Route
+              path="usermanagement"
+              element={
+                <Authenticated rolesRequired={['admin']}>
+                  <UserManagement />
+                </Authenticated>
+              }
+            />
+            <Route
+              path="configuration"
+              element={
+                <Authenticated rolesRequired={['admin']}>
+                  <ConfigurationManagement />
+                </Authenticated>
+              }
+            />
+            <Route
+              path="eventmanagement"
+              element={
+                <Authenticated>
+                  <EventManagement />
+                </Authenticated>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>

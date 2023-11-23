@@ -2,7 +2,7 @@ type Props = {
   label?: string;
   name: string;
   multiple: boolean;
-  options: { key: string; displayText: string }[];
+  options: { key: string | number; displayText: string }[];
   register: any;
   errors: any;
   disabled?: boolean;
