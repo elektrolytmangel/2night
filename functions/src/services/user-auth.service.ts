@@ -20,35 +20,33 @@ export const isUser2PartyAuthorized = async (req: CallableRequest<PartyRequest |
   }
 
   const configuration = await S.configurationService.getConfiguration();
-  let eventLocationId: string | undefined;
+  const eventLocationIds: string[] = [];
   try {
-    if (isPartyExisting(req.data)) {
+    if (isPartyIdAvailable(req.data)) {
       const party = await S.partyService.getParty(req.data.id);
-      eventLocationId = party?.location.id;
-    } else {
-      eventLocationId = req.data.location.id;
+      eventLocationIds.push(party?.location.id);
+    }
+
+    if (isPartyLocationAvailable(req.data)) {
+      eventLocationIds.push(req.data.location.id);
     }
   } catch (error) {
     console.log(error);
   }
 
-  const permission = configuration.eventLocations.find((x) => x.id === eventLocationId);
-  if (!permission) {
+  const permissions = configuration.eventLocations.filter((x) => eventLocationIds.includes(x.id));
+  if (!permissions || permissions.length === 0) {
     throw new HttpsError('permission-denied', 'No permission for this location');
   }
 
-  let allowed: boolean = false;
-  permission.rolesAllowed.forEach((role) => {
-    allowed = token.roles?.includes(role) || allowed;
+  permissions.forEach((permission) => {
+    token.roles?.forEach((role: string) => {
+      const allowed = permission.rolesAllowed.includes(role);
+      if (!allowed) {
+        throw new HttpsError('permission-denied', 'No permission for this location');
+      }
+    });
   });
-
-  if (!allowed) {
-    throw new HttpsError('permission-denied', 'No permission for this location');
-  }
-};
-
-const isPartyExisting = (obj: any): obj is DeletePartyRequest => {
-  return obj.id !== undefined && obj.id !== null && obj.id !== '';
 };
 
 export const isAdminUser = async (req: CallableRequest<any>) => {
@@ -60,4 +58,12 @@ export const isAdminUser = async (req: CallableRequest<any>) => {
   if (!token.roles?.includes('admin')) {
     throw new HttpsError('permission-denied', 'No permission for this action');
   }
+};
+
+const isPartyIdAvailable = (obj: any): obj is DeletePartyRequest => {
+  return obj.id !== undefined && obj.id !== null && obj.id !== '';
+};
+
+const isPartyLocationAvailable = (obj: any): obj is PartyRequest => {
+  return obj.location !== undefined && obj.location !== null;
 };
