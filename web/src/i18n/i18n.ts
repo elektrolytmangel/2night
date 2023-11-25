@@ -71,6 +71,11 @@ i18n
           price: 'Price',
           add_event: 'Add event',
           create_edit_party: 'Create / Edit party',
+          'auth/user-not-found': 'User not found or wrong password',
+          'auth/wrong-password': 'User not found or wrong password',
+          unauthorized: 'Unauthorized',
+          you_are_unauthorized_your_options:
+            'You are unauthorized to see this page. Login or SignUp to see this page and contact our support to get the correct access rights for your company.',
         },
       },
       de: {

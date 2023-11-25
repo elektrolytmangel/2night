@@ -72,12 +72,11 @@ export const WeeklyView = () => {
   });
 
   useEffect(() => {
-    const abortController = new AbortController();
     const request = async () => {
       dispatch({ type: 'SET_LOADING', payload: 'loading' });
       const monday = getMondaFromWeekDay(state.date);
       const sunday = getSundayFromWeekDay(state.date);
-      const data = await getParties(monday, sunday, abortController.signal);
+      const data = await getParties(monday, sunday);
       dispatch({ type: 'SET_PARTIES', payload: data.data });
       if (data.errorMsg) {
         dispatch({ type: 'SET_MESSAGE', payload: t('uups') });
@@ -89,9 +88,6 @@ export const WeeklyView = () => {
     };
 
     request();
-    return () => {
-      abortController.abort();
-    };
   }, [state.date, t]);
 
   const sortedData = state.parties.sort((a, b) => {

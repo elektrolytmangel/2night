@@ -1,8 +1,9 @@
 import { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { auth } from '../../services/firebase.service';
+import { useUserContext } from '../../context/userContext';
+import { Unauthorized } from './unauthorized/Unauthorized';
 
-const validateRquiredRoles = (rolesRequired: string[], userRoles?: string[]): boolean => {
+const validateRequiredRoles = (rolesRequired: string[], userRoles?: string[]): boolean => {
   let allowed: boolean = false;
   rolesRequired?.forEach((role) => {
     allowed = userRoles?.includes(role) || allowed;
@@ -12,27 +13,37 @@ const validateRquiredRoles = (rolesRequired: string[], userRoles?: string[]): bo
 
 interface Props extends PropsWithChildren {
   rolesRequired?: string[];
-  redirectToLogin?: boolean;
+  unauthorizedAction?: 'redirect' | 'hide' | 'unauthorized-page';
 }
 
 export const Authenticated = (props: Props) => {
   const location = useLocation();
   const [state, setState] = useState<'waiting' | 'authorized' | 'rejected'>('waiting');
+  const { state: userState } = useUserContext();
 
   useEffect(() => {
     const checkIfAuthorized = async () => {
-      await auth.authStateReady();
-      const token = await auth.currentUser?.getIdTokenResult(true);
-      let allowed = token?.token !== undefined && token?.token !== null && token?.token !== '';
-      if (props.rolesRequired && token) {
-        const userRoles = token.claims.roles as string[];
-        allowed = validateRquiredRoles(props.rolesRequired, userRoles) && allowed;
+      let allowed = userState?.isAuthenticated ?? false;
+      if (props.rolesRequired && allowed) {
+        allowed = validateRequiredRoles(props.rolesRequired, userState?.roles);
       }
-
       setState(allowed ? 'authorized' : 'rejected');
     };
+
     checkIfAuthorized();
-  }, [props.rolesRequired]);
+  }, [userState, props.rolesRequired]);
+
+  const getUnauthorizedResult = () => {
+    switch (props.unauthorizedAction) {
+      case 'unauthorized-page':
+        return <Unauthorized />;
+      case 'redirect':
+        return <Navigate to="/login" replace state={{ path: location.pathname }} />;
+      case 'hide':
+      default:
+        return null;
+    }
+  };
 
   let result: ReactNode | null = null;
   switch (state) {
@@ -40,7 +51,7 @@ export const Authenticated = (props: Props) => {
       result = null;
       break;
     case 'rejected':
-      result = props.redirectToLogin ? <Navigate to="/login" replace state={{ path: location.pathname }} /> : null;
+      result = getUnauthorizedResult();
       break;
     case 'authorized':
       result = props.children;

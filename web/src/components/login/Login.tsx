@@ -1,10 +1,12 @@
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { auth } from '../../services/firebase.service';
-import { TextField } from '../form/text-field/TextField';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useUserContext } from '../../context/userContext';
+import { getCurrentUserState } from '../../services/current-user.service';
+import { auth } from '../../services/firebase.service';
+import { TextField } from '../form/text-field/TextField';
 
 type UserLogin = {
   email: string;
@@ -20,34 +22,42 @@ export const Login = () => {
     register,
     formState: { errors },
   } = useForm<UserLogin>();
+  const [loginError, setLoginError] = useState<string | undefined>(undefined);
+  const { state: userState, dispatch } = useUserContext();
 
-  const handleLogin = (data: UserLogin) => {
+  const handleLogin = async (data: UserLogin) => {
     const { email, password } = data;
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        navigate(state?.path || '/admin');
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      const user = await getCurrentUserState();
+      dispatch({ type: 'SET_USER_STATE', payload: user });
+      navigate(state?.path || '/admin');
+    } catch (error: any) {
+      setLoginError(error.code);
+    }
   };
 
   useEffect(() => {
     const init = async () => {
-      await auth.authStateReady();
-      if (auth.currentUser) {
+      if (userState?.isAuthenticated) {
         navigate(state?.path || '/admin');
       }
     };
     init();
-  }, [navigate, state?.path]);
+  }, [navigate, userState, state?.path]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', margin: 'auto', textAlign: 'center' }}>
       <p className="fs-2 text-primary">{t('login')}</p>
       <form
         onSubmit={handleSubmit((data) => handleLogin(data))}
-        style={{ display: 'flex', flexDirection: 'column', margin: 'auto', textAlign: 'start', gap: '0.5rem' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          margin: 'auto',
+          textAlign: 'start',
+          gap: '0.5rem',
+        }}
       >
         <TextField
           label={t('email') + ' *'}
@@ -68,7 +78,8 @@ export const Login = () => {
             <small>{t('forgot_password')}</small>
           </Link>
         </div>
-        <button className="btn btn-primary mt-2" type="submit">
+        {loginError && <div className="alert alert-danger m-0">{t(loginError)}</div>}
+        <button className="btn btn-primary" type="submit">
           {t('login')}
         </button>
         <Link to={'/register'} className="btn btn-outline-primary">

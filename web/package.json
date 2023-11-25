@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",
+    "@types/bootstrap": "^5.2.10",
     "@types/luxon": "^3.3.3"
   }
 }

@@ -1,27 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { useTranslation } from 'react-i18next';
+import { useUserContext } from '../../../../context/userContext';
 import { Configuration, Party } from '../../../../model/app';
-import { getAll } from '../../../../services/firebase-party.service';
-import { EventForm } from '../event-form/EventForm';
 import { getConfiguration } from '../../../../services/firebase-configuration.service';
+import { getAll } from '../../../../services/firebase-party.service';
+import { filterPartiesByRole } from '../../../../services/party.service';
+import { EventForm } from '../event-form/EventForm';
 
 const EventList: React.FC = () => {
   const { t } = useTranslation();
   const [parties, setParties] = useState<Party[]>([]);
   const [editParty, setEditParty] = useState<Party | undefined>(undefined);
   const [configuration, setConfiguration] = useState<Configuration | null>(null);
+  const { state } = useUserContext();
 
-  const refreshData = async () => {
-    const configuration = await getConfiguration();
-    setConfiguration(configuration);
-    const parties = await getAll();
-    setParties(parties);
-  };
+  const refreshData = useCallback(async () => {
+    const config = await getConfiguration();
+    setConfiguration(config);
+    const allParties = await getAll();
+    const filteredParties = filterPartiesByRole(allParties, state?.roles ?? [], config?.eventLocations ?? []);
+    setParties(filteredParties);
+  }, [state]);
 
   useEffect(() => {
     refreshData();
-  }, []);
+  }, [refreshData]);
 
   const handleSubmitParty = async () => {
     setEditParty(undefined);

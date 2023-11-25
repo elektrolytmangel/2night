@@ -59,16 +59,16 @@ export const ConfigurationManagement = () => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '100%',
-          width: '100%',
         }}
       >
         <p className="fs-1 text-primary">{t('configuration')}</p>
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%', marginLeft: '0.5rem' }}>
           <RoleManagement roles={roles} setRoles={setRoles} />
         </div>
         <form onSubmit={handleSubmit((data) => onHandleSubmit(data))} style={{ width: '100%' }}>
-          <p className="fs-3 text-primary">{t('event_locations')}</p>
+          <p className="fs-3 text-primary" style={{ marginLeft: '0.5rem' }}>
+            {t('event_locations')}
+          </p>
           <EventLocationList roles={roles} />
           <CheckboxField
             label={t('is_active')}

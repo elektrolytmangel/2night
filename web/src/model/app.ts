@@ -17,6 +17,15 @@ export interface EventLocation {
   locationName: string;
 }
 
+export interface UserState {
+  uid: string;
+  displayName: string;
+  email: string;
+  token: string;
+  roles: string[];
+  isAuthenticated: boolean;
+}
+
 export interface AppUser extends User {
   customClaims?: {
     roles?: string[];

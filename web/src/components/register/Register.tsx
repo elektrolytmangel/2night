@@ -1,9 +1,10 @@
-import { useForm } from 'react-hook-form';
-import { auth } from '../../services/firebase.service';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
-import { TextField } from '../form/text-field/TextField';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { auth } from '../../services/firebase.service';
+import { TextField } from '../form/text-field/TextField';
 
 type UserRegsiter = {
   displayName: string;
@@ -21,13 +22,17 @@ export const Register = () => {
     getValues,
     formState: { errors },
   } = useForm<UserRegsiter>();
+  const [signUpError, setSignUpError] = useState<string | undefined>(undefined);
+
   const onHandleSubmit = async (data: UserRegsiter) => {
     try {
       const userCredentials = await createUserWithEmailAndPassword(auth, data.email, data.password);
       sendEmailVerification(userCredentials.user);
       updateProfile(userCredentials.user, { displayName: data.displayName });
       navigate('/admin');
-    } catch (error) {}
+    } catch (error: any) {
+      setSignUpError(error.code);
+    }
   };
 
   return (
@@ -70,7 +75,8 @@ export const Register = () => {
           })}
           errors={errors}
         />
-        <button className="btn btn-primary mt-3" type="submit">
+        {signUpError && <div className="alert alert-danger m-0">{t(signUpError)}</div>}
+        <button className="btn btn-primary" type="submit">
           {t('sign_up')}
         </button>
         <Link to="/login" className="btn btn-outline-primary">

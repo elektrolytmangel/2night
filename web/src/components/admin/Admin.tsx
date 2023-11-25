@@ -6,7 +6,9 @@ export const Admin = () => {
   const { t } = useTranslation();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', margin: 'auto', textAlign: 'center' }}>
+    <div
+      style={{ display: 'flex', flexDirection: 'column', marginLeft: 'auto', marginRight: 'auto', textAlign: 'center' }}
+    >
       <p className="fs-1 text-primary">{t('admin')}</p>
       <p className="fs-3 text-primary">{t('welcome_admin')}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '0 2rem' }}>

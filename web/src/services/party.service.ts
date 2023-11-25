@@ -1,7 +1,7 @@
-import { Party } from '../model/app';
+import { EventLocationPermission, Party } from '../model/app';
 import { getAll } from './firebase-party.service';
 
-const filterParties = (parties: Party[], startDate?: Date, endDate?: Date) => {
+const filterPartiesByDate = (parties: Party[], startDate?: Date, endDate?: Date) => {
   if (startDate && endDate) {
     return parties.filter((party) => {
       const partyDate = new Date(party.startDateTime);
@@ -16,12 +16,30 @@ interface PartyResponse {
   errorMsg?: string;
 }
 
-export const getParties = async (startDate?: Date, endDate?: Date, signal?: AbortSignal): Promise<PartyResponse> => {
+export const getParties = async (startDate?: Date, endDate?: Date): Promise<PartyResponse> => {
   try {
     const response = await getAll();
-    return { data: filterParties(response, startDate, endDate) };
+    return { data: filterPartiesByDate(response, startDate, endDate) };
   } catch (error: any) {
-    const msg = error.name !== 'CanceledError' ? error.message : '';
-    return { data: [], errorMsg: msg };
+    return { data: [], errorMsg: error.message };
+  }
+};
+
+export const filterPartiesByRole = (parties: Party[], roles: string[], permissions: EventLocationPermission[]) => {
+  try {
+    if (roles.includes('admin')) {
+      return parties;
+    } else {
+      return parties.filter((party) => {
+        const eventLocation = permissions.find((permission) => permission.id === party.location.id);
+        if (eventLocation) {
+          const result = roles.reduce((a, b) => eventLocation.rolesAllowed.includes(b) || a, false);
+          return result;
+        }
+        return false;
+      });
+    }
+  } catch (error: any) {
+    return [];
   }
 };
