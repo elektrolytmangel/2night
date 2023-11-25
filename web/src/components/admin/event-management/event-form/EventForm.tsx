@@ -45,9 +45,9 @@ export const EventForm = (props: Props) => {
       >
         <TextField label={t('id')} name="id" register={register('id')} type="text" errors={errors} disabled />
         <TextField
-          label={t('event_name')}
+          label={t('event_name') + ' *'}
           name="eventName"
-          register={register('eventName')}
+          register={register('eventName', { required: t('field_required') })}
           type="text"
           errors={errors}
         />
@@ -66,25 +66,25 @@ export const EventForm = (props: Props) => {
           errors={errors}
         />
         <TextField
-          label={t('start_datetime')}
+          label={t('start_datetime') + ' *'}
           name="startDateTime"
-          register={register('startDateTime')}
+          register={register('startDateTime', { required: t('field_required') })}
           type="datetime-local"
           errors={errors}
         />
         <TextField
-          label={t('end_datetime')}
+          label={t('end_datetime') + ' *'}
           name="endDateTime"
-          register={register('endDateTime')}
+          register={register('endDateTime', { required: t('field_required') })}
           type="datetime-local"
           errors={errors}
         />
         <TextField label={t('price')} name="price" register={register('price')} type="number" errors={errors} />
         <TextAreaField label={t('artists')} name="artits" register={register('artists')} errors={errors} />
         <SelectField
-          label={t('event_location')}
+          label={t('event_location') + ' *'}
           name="locationId"
-          register={register('locationId')}
+          register={register('locationId', { required: t('field_required') })}
           multiple={false}
           errors={errors}
           options={props.eventLocations.map((x) => {
