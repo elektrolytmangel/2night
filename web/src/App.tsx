@@ -13,6 +13,7 @@ import { Register } from './admin/register/Register';
 import { WeeklyView } from './weekly-view/WeeklyView';
 import { useUserContext } from './context/userContext';
 import { getCurrentUserState } from './services/current-user.service';
+import { CookieConsent } from './components/cookie-consent/CookieConsent';
 
 function App() {
   const { dispatch } = useUserContext();
@@ -70,6 +71,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      <CookieConsent />
     </div>
   );
 }

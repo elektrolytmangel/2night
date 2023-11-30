@@ -79,6 +79,9 @@ i18n
           delete: 'Delete',
           delete_party_question: 'Do you really want to delete this party?',
           cancel: 'Cancel',
+          we_use_cookies: 'We use cookies to improve your experience on our website.',
+          accept: 'Accept',
+          decline: 'Decline',
         },
       },
       de: {
