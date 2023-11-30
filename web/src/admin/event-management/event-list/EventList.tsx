@@ -1,11 +1,13 @@
+import { DateTime } from 'luxon';
 import React, { useCallback, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { useTranslation } from 'react-i18next';
 import { useUserContext } from '../../../context/userContext';
 import { Configuration, Party } from '../../../model/app';
 import { getConfiguration } from '../../../services/firebase-configuration.service';
-import { getAll } from '../../../services/firebase-party.service';
+import { getAll, remove } from '../../../services/firebase-party.service';
 import { filterPartiesByRole } from '../../../services/party.service';
+import { DeleteConfirmation } from '../delete-confirmation/DeleteConfirmation';
 import { EventForm } from '../event-form/EventForm';
 
 const EventList: React.FC = () => {
@@ -13,6 +15,7 @@ const EventList: React.FC = () => {
   const [parties, setParties] = useState<Party[]>([]);
   const [editParty, setEditParty] = useState<Party | undefined>(undefined);
   const [configuration, setConfiguration] = useState<Configuration | null>(null);
+  const [deletePartyId, setDeletePartyId] = useState<string | undefined>(undefined);
   const { state } = useUserContext();
 
   const refreshData = useCallback(async () => {
@@ -32,23 +35,34 @@ const EventList: React.FC = () => {
     refreshData();
   };
 
+  const handleDeleteParty = useCallback(async () => {
+    if (deletePartyId) {
+      await remove(deletePartyId);
+      setDeletePartyId(undefined);
+      refreshData();
+    }
+  }, [deletePartyId, refreshData]);
+
   const partyContent = parties.map((party) => {
-    const startDateTime = new Date(party.startDateTime).toISOString();
-    const endDateTime = new Date(party.endDateTime).toISOString();
+    const startDateTime = DateTime.fromJSDate(new Date(party.startDateTime)).toLocaleString(DateTime.DATETIME_SHORT);
+    const endDateTime = DateTime.fromJSDate(new Date(party.endDateTime)).toLocaleString(DateTime.DATETIME_SHORT);
     return (
       <tr key={party.id} style={{ textAlign: 'start' }}>
-        <td className="user-list-mobile-hidden">{party.id}</td>
+        <td className="mobile-hidden">{party.id}</td>
         <td>{party.eventName}</td>
         <td>{startDateTime}</td>
-        <td>{endDateTime}</td>
+        <td className="mobile-hidden">{endDateTime}</td>
         <td>{party.location.locationName}</td>
-        <td>{party.artists}</td>
-        <td>{party.description}</td>
-        <td>{party.musicGenre}</td>
-        <td>{party.price}</td>
-        <td>
-          <button className="btn btn-primary" onClick={() => setEditParty(party)}>
+        <td className="mobile-hidden">{party.artists}</td>
+        <td className="mobile-hidden">{party.description}</td>
+        <td className="mobile-hidden">{party.musicGenre}</td>
+        <td className="mobile-hidden">{party.price}</td>
+        <td className="">
+          <button className="btn btn-primary mx-1" onClick={() => setEditParty(party)}>
             {t('edit')}
+          </button>
+          <button className="btn btn-outline-primary mx-1" onClick={() => setDeletePartyId(party.id)}>
+            {t('delete')}
           </button>
         </td>
       </tr>
@@ -57,27 +71,38 @@ const EventList: React.FC = () => {
 
   return (
     <div>
+      <button
+        className="btn btn-primary mb-3 w-100 container "
+        onClick={() => setEditParty({ id: undefined } as Party)}
+      >
+        {t('add_event')}
+      </button>
       <table className="table table-dark table-striped table-hover table-responsive">
         <thead>
           <tr style={{ textAlign: 'start' }}>
-            <th scope="col" className="user-list-mobile-hidden ">
+            <th scope="col" className="mobile-hidden">
               {t('id')}
             </th>
             <th scope="col">{t('event_name')}</th>
             <th scope="col">{t('start_datetime')}</th>
-            <th scope="col">{t('end_datetime')}</th>
+            <th className="mobile-hidden" scope="col">
+              {t('end_datetime')}
+            </th>
             <th scope="col">{t('event_location')}</th>
-            <th scope="col">{t('artists')}</th>
-            <th scope="col">{t('description')}</th>
-            <th scope="col">{t('music_genre')}</th>
-            <th scope="col">{t('price')}</th>
+            <th className="mobile-hidden" scope="col">
+              {t('artists')}
+            </th>
+            <th className="mobile-hidden" scope="col">
+              {t('description')}
+            </th>
+            <th className="mobile-hidden" scope="col">
+              {t('music_genre')}
+            </th>
+            <th className="mobile-hidden" scope="col">
+              {t('price')}
+            </th>
             <th scope="col">
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-                {t('actions')}
-                <button className="btn btn-outline-primary" onClick={() => setEditParty({ id: undefined } as Party)}>
-                  {t('add_event')}
-                </button>
-              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>{t('actions')}</div>
             </th>
           </tr>
         </thead>
@@ -98,6 +123,11 @@ const EventList: React.FC = () => {
           />
         </div>
       </Modal>
+      <DeleteConfirmation
+        show={deletePartyId !== undefined}
+        onCancel={() => setDeletePartyId(undefined)}
+        onConfirm={() => handleDeleteParty()}
+      />
     </div>
   );
 };

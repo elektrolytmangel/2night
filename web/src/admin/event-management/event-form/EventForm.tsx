@@ -1,10 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { EventLocation, Party } from '../../../model/app';
-import { add, update } from '../../../services/firebase-party.service';
 import { SelectField } from '../../../components/form/select-field/SelectField';
-import { TextField } from '../../../components/form/text-field/TextField';
 import { TextAreaField } from '../../../components/form/text-area-field/TextAreaField';
+import { TextField } from '../../../components/form/text-field/TextField';
+import { useUserContext } from '../../../context/userContext';
+import { EventLocation, EventLocationPermission, Party } from '../../../model/app';
+import { add, update } from '../../../services/firebase-party.service';
+import { filterPermissionsByRoles } from '../../../services/party.service';
 
 interface PartyFormData extends Party {
   locationId: string;
@@ -12,7 +14,7 @@ interface PartyFormData extends Party {
 
 type Props = {
   party?: Party;
-  eventLocations: EventLocation[];
+  eventLocations: EventLocationPermission[];
   onPartySubmit: () => void;
 };
 
@@ -25,6 +27,7 @@ export const EventForm = (props: Props) => {
   } = useForm<PartyFormData>({
     defaultValues: props.party,
   });
+  const { state: user } = useUserContext();
 
   const onHandleSubmit = async (data: PartyFormData) => {
     data.location = props.eventLocations.find((x) => x.id === data.locationId) ?? ({} as EventLocation);
@@ -40,7 +43,6 @@ export const EventForm = (props: Props) => {
     <div className="admin-form-container">
       <p className="text-primary fs-2">{t('create_edit_party')}</p>
       <form onSubmit={handleSubmit((data) => onHandleSubmit(data))} className="admin-form">
-        <TextField label={t('id')} name="id" register={register('id')} type="text" errors={errors} disabled />
         <TextField
           label={t('event_name') + ' *'}
           name="eventName"
@@ -62,6 +64,7 @@ export const EventForm = (props: Props) => {
           type="text"
           errors={errors}
         />
+
         <TextField
           label={t('start_datetime') + ' *'}
           name="startDateTime"
@@ -84,7 +87,7 @@ export const EventForm = (props: Props) => {
           register={register('locationId', { required: t('field_required') })}
           multiple={false}
           errors={errors}
-          options={props.eventLocations.map((x) => {
+          options={filterPermissionsByRoles(user?.roles, props.eventLocations).map((x) => {
             return { key: x.id, displayText: x.locationName };
           })}
         />

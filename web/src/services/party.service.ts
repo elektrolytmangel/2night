@@ -43,3 +43,22 @@ export const filterPartiesByRole = (parties: Party[], roles: string[], permissio
     return [];
   }
 };
+
+export const filterPermissionsByRoles = (roles: string[] | undefined, permissions: EventLocationPermission[]) => {
+  if (!roles) return [];
+  try {
+    if (roles.includes('admin')) {
+      return permissions;
+    } else {
+      return permissions.filter((eventLocation) => {
+        if (eventLocation) {
+          const result = roles.reduce((a, b) => eventLocation.rolesAllowed.includes(b) || a, false);
+          return result;
+        }
+        return false;
+      });
+    }
+  } catch (error: any) {
+    return [];
+  }
+};

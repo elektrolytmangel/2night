@@ -76,6 +76,9 @@ i18n
           unauthorized: 'Unauthorized',
           you_are_unauthorized_your_options:
             'You are unauthorized to see this page. Login or SignUp to see this page and contact our support to get the correct access rights for your company.',
+          delete: 'Delete',
+          delete_party_question: 'Do you really want to delete this party?',
+          cancel: 'Cancel',
         },
       },
       de: {
