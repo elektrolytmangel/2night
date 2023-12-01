@@ -47,7 +47,7 @@ export const WeeklyView = () => {
     );
   });
 
-  const message = error ? t('uups') : parties.length === 0 ? t('seems_calm_week') : null;
+  const message = error ? t('uups') : parties.length === 0 && !isLoading ? t('seems_calm_week') : null;
   return (
     <div className="weekly-view">
       <Header dayInWeek={initialDate} />
