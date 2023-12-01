@@ -6,14 +6,15 @@ import { AdminLayout } from './admin/admin-layout/AdminLayout';
 import { ConfigurationManagement } from './admin/configuration-management/ConfigurationManagement';
 import { EventManagement } from './admin/event-management/EventManagement';
 import { UserManagement } from './admin/user-management/UserManagement';
+import { ActionHandler } from './auth/action-handler/ActionHandler';
+import { Login } from './auth/login/Login';
+import { PasswordForgot } from './auth/password-forgot/PasswordForgot';
+import { Register } from './auth/register/Register';
 import { Authenticated } from './components/authenticated/Authenticated';
-import { Login } from './admin/login/Login';
-import { PasswordForgot } from './admin/password-forgot/PasswordForgot';
-import { Register } from './admin/register/Register';
-import { WeeklyView } from './weekly-view/WeeklyView';
+import { CookieConsent } from './components/cookie-consent/CookieConsent';
 import { useUserContext } from './context/userContext';
 import { getCurrentUserState } from './services/current-user.service';
-import { CookieConsent } from './components/cookie-consent/CookieConsent';
+import { WeeklyView } from './weekly-view/WeeklyView';
 
 function App() {
   const { dispatch } = useUserContext();
@@ -69,6 +70,7 @@ function App() {
               }
             />
           </Route>
+          <Route path="/_/auth/action" element={<ActionHandler />} />
         </Routes>
       </BrowserRouter>
       <CookieConsent />

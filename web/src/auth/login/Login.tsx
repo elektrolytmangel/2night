@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { TextField } from '../../components/form/text-field/TextField';
 import { useUserContext } from '../../context/userContext';
 import { getCurrentUserState } from '../../services/current-user.service';
 import { auth } from '../../services/firebase.service';
-import { TextField } from '../../components/form/text-field/TextField';
 
 type UserLogin = {
   email: string;

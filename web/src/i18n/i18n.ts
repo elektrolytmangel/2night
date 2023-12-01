@@ -73,6 +73,7 @@ i18n
           create_edit_party: 'Create / Edit party',
           'auth/user-not-found': 'User not found or wrong password',
           'auth/wrong-password': 'User not found or wrong password',
+          'auth/invalid-login-credentials': 'User not found or wrong password',
           unauthorized: 'Unauthorized',
           you_are_unauthorized_your_options:
             'You are unauthorized to see this page. Login or SignUp to see this page and contact our support to get the correct access rights for your company.',
@@ -82,6 +83,11 @@ i18n
           we_use_cookies: 'We use cookies to improve your experience on our website.',
           accept: 'Accept',
           decline: 'Decline',
+          passwords_dont_match: 'Passwords do not match',
+          new_password: 'New password',
+          repeat_new_password: 'Repeat new password',
+          not_found: '404 - Not found',
+          go_to_start_page: 'Go to start page',
         },
       },
       de: {

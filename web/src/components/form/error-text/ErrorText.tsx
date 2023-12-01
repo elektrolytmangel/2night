@@ -27,7 +27,7 @@ export const ErrorText = (props: Props) => {
   return (
     <div>
       {errorMessage && (
-        <span className="text-primary ">
+        <span className="text-primary">
           <small>
             <em>{errorMessage}</em>
           </small>

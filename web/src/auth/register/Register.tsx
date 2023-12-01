@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth } from '../../services/firebase.service';
 import { TextField } from '../../components/form/text-field/TextField';
+import { auth } from '../../services/firebase.service';
 
 type UserRegsiter = {
   displayName: string;
@@ -27,8 +27,8 @@ export const Register = () => {
   const onHandleSubmit = async (data: UserRegsiter) => {
     try {
       const userCredentials = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      sendEmailVerification(userCredentials.user);
-      updateProfile(userCredentials.user, { displayName: data.displayName });
+      await sendEmailVerification(userCredentials.user);
+      await updateProfile(userCredentials.user, { displayName: data.displayName });
       navigate('/admin');
     } catch (error: any) {
       setSignUpError(error.code);

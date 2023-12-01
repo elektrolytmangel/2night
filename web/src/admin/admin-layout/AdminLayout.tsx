@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet } from 'react-router-dom';
-import { useUserContext } from '../../context/userContext';
+import { Logout } from '../../auth/logout/Logout';
 import { Authenticated } from '../../components/authenticated/Authenticated';
-import { Logout } from '../logout/Logout';
+import { useUserContext } from '../../context/userContext';
 import './AdminLayout.css';
 
 export const AdminLayout = () => {

@@ -1,9 +1,9 @@
-import { useTranslation } from 'react-i18next';
-import { TextField } from '../../components/form/text-field/TextField';
-import { useForm } from 'react-hook-form';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../services/firebase.service';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { TextField } from '../../components/form/text-field/TextField';
+import { auth } from '../../services/firebase.service';
 
 type ForgotPassword = {
   email: string;
@@ -18,8 +18,8 @@ export const PasswordForgot = () => {
     formState: { errors },
   } = useForm<ForgotPassword>();
 
-  const onHandleSubmit = (data: ForgotPassword) => {
-    sendPasswordResetEmail(auth, data.email);
+  const onHandleSubmit = async (data: ForgotPassword) => {
+    await sendPasswordResetEmail(auth, data.email);
     navigate('/');
   };
 
