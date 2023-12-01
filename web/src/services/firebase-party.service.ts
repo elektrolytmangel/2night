@@ -32,10 +32,11 @@ export const add = async (partyRequest: any) => {
   });
   return await postParty(partyRequest)
     .then((result) => {
-      return result.data;
+      return result.data as Party;
     })
     .catch((error) => {
       console.log(error);
+      return null;
     });
 };
 
@@ -43,10 +44,11 @@ export const update = async (partyRequest: Party) => {
   const putParty = httpsCallable(functions, 'putParty');
   return await putParty(partyRequest)
     .then((result) => {
-      return result.data;
+      return result.data as Party;
     })
     .catch((error) => {
       console.log(error);
+      return null;
     });
 };
 

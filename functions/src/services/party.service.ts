@@ -45,7 +45,7 @@ export default class PartyService {
     try {
       const party = req;
       await this.collection.doc(partyId).set(party);
-      return { ...party, id: partyId };
+      return { ...party, id: partyId } as PartyResponse;
     } catch (error: any) {
       throw new HttpsError('internal', error.message);
     }

@@ -1,73 +1,89 @@
 import { DateTime } from 'luxon';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 import { useUserContext } from '../../../context/userContext';
-import { Configuration, Party } from '../../../model/app';
+import { Party } from '../../../model/app';
 import { getConfiguration } from '../../../services/firebase-configuration.service';
-import { getAll, remove } from '../../../services/firebase-party.service';
+import { add, getAll, remove, update } from '../../../services/firebase-party.service';
 import { filterPartiesByRole } from '../../../services/party.service';
 import { DeleteConfirmation } from '../delete-confirmation/DeleteConfirmation';
 import { EventForm } from '../event-form/EventForm';
 
+const compare = (a: Party, b: Party) => {
+  if (a.startDateTime < b.startDateTime) {
+    return 1;
+  }
+  if (a.startDateTime > b.startDateTime) {
+    return -1;
+  }
+  return 0;
+};
+
 const EventList: React.FC = () => {
   const { t } = useTranslation();
-  const [parties, setParties] = useState<Party[]>([]);
-  const [editParty, setEditParty] = useState<Party | undefined>(undefined);
-  const [configuration, setConfiguration] = useState<Configuration | null>(null);
-  const [deletePartyId, setDeletePartyId] = useState<string | undefined>(undefined);
   const { state } = useUserContext();
+  const [editParty, setEditParty] = useState<Party | undefined>(undefined);
+  const [deleteParty, setDeleteParty] = useState<Party | undefined>(undefined);
+  const { data: parties, mutate, isLoading, error } = useSWR('/parties', () => getAll());
+  const { data: configuration } = useSWR('/configuration', () => getConfiguration());
 
-  const refreshData = useCallback(async () => {
-    const config = await getConfiguration();
-    setConfiguration(config);
-    const allParties = await getAll();
-    const filteredParties = filterPartiesByRole(allParties, state?.roles ?? [], config?.eventLocations ?? []);
-    setParties(filteredParties);
-  }, [state]);
-
-  useEffect(() => {
-    refreshData();
-  }, [refreshData]);
-
-  const handleSubmitParty = async () => {
+  const handleSubmitParty = async (data: Party) => {
+    if (data.id) {
+      await mutate(async () => {
+        await update(data);
+        return parties?.map((party) => (party.id === data.id ? data : party));
+      });
+    } else {
+      await mutate(async () => {
+        const response = await add(data);
+        if (response) {
+          return [...(parties ?? []), response];
+        }
+      });
+    }
     setEditParty(undefined);
-    refreshData();
   };
 
   const handleDeleteParty = useCallback(async () => {
-    if (deletePartyId) {
-      await remove(deletePartyId);
-      setDeletePartyId(undefined);
-      refreshData();
+    if (deleteParty) {
+      await mutate(async () => {
+        await remove(deleteParty.id ?? '');
+        return parties?.filter((party) => party.id !== deleteParty.id);
+      });
+      setDeleteParty(undefined);
     }
-  }, [deletePartyId, refreshData]);
+  }, [deleteParty, mutate, parties]);
 
-  const partyContent = parties.map((party) => {
-    const startDateTime = DateTime.fromJSDate(new Date(party.startDateTime)).toLocaleString(DateTime.DATETIME_SHORT);
-    const endDateTime = DateTime.fromJSDate(new Date(party.endDateTime)).toLocaleString(DateTime.DATETIME_SHORT);
-    return (
-      <tr key={party.id} style={{ textAlign: 'start' }}>
-        <td className="mobile-hidden">{party.id}</td>
-        <td>{party.eventName}</td>
-        <td>{startDateTime}</td>
-        <td className="mobile-hidden">{endDateTime}</td>
-        <td>{party.location.locationName}</td>
-        <td className="mobile-hidden">{party.artists}</td>
-        <td className="mobile-hidden">{party.description}</td>
-        <td className="mobile-hidden">{party.musicGenre}</td>
-        <td className="mobile-hidden">{party.price}</td>
-        <td className="">
-          <button className="btn btn-primary mx-1" onClick={() => setEditParty(party)}>
-            {t('edit')}
-          </button>
-          <button className="btn btn-outline-primary mx-1" onClick={() => setDeletePartyId(party.id)}>
-            {t('delete')}
-          </button>
-        </td>
-      </tr>
-    );
-  });
+  const filteredParties = filterPartiesByRole(parties || [], state?.roles ?? [], configuration?.eventLocations ?? []);
+  const partyContent = filteredParties
+    .sort((a, b) => compare(a, b))
+    .map((party) => {
+      const startDateTime = DateTime.fromJSDate(new Date(party.startDateTime)).toLocaleString(DateTime.DATETIME_SHORT);
+      const endDateTime = DateTime.fromJSDate(new Date(party.endDateTime)).toLocaleString(DateTime.DATETIME_SHORT);
+      return (
+        <tr key={party.id} style={{ textAlign: 'start' }}>
+          <td className="mobile-hidden">{party.id}</td>
+          <td>{party.eventName}</td>
+          <td>{startDateTime}</td>
+          <td className="mobile-hidden">{endDateTime}</td>
+          <td>{party.location.locationName}</td>
+          <td className="mobile-hidden">{party.artists}</td>
+          <td className="mobile-hidden">{party.description}</td>
+          <td className="mobile-hidden">{party.musicGenre}</td>
+          <td className="mobile-hidden">{party.price}</td>
+          <td className="">
+            <button className="btn btn-primary mx-1" onClick={() => setEditParty(party)}>
+              {t('edit')}
+            </button>
+            <button className="btn btn-outline-primary mx-1" onClick={() => setDeleteParty(party)}>
+              {t('delete')}
+            </button>
+          </td>
+        </tr>
+      );
+    });
 
   return (
     <div>
@@ -77,6 +93,7 @@ const EventList: React.FC = () => {
       >
         {t('add_event')}
       </button>
+      {error && <div className="alert alert-danger m-1 p-0">{error?.message}</div>}
       <table className="table table-dark table-striped table-hover table-responsive">
         <thead>
           <tr style={{ textAlign: 'start' }}>
@@ -119,13 +136,15 @@ const EventList: React.FC = () => {
           <EventForm
             party={editParty}
             eventLocations={configuration?.eventLocations ?? []}
-            onPartySubmit={() => handleSubmitParty()}
+            onPartySubmit={(data) => handleSubmitParty(data)}
+            isLoading={isLoading}
           />
         </div>
       </Modal>
       <DeleteConfirmation
-        show={deletePartyId !== undefined}
-        onCancel={() => setDeletePartyId(undefined)}
+        show={deleteParty !== undefined}
+        text={deleteParty?.eventName ?? ''}
+        onCancel={() => setDeleteParty(undefined)}
         onConfirm={() => handleDeleteParty()}
       />
     </div>

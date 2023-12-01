@@ -11,18 +11,9 @@ const filterPartiesByDate = (parties: Party[], startDate?: Date, endDate?: Date)
   return parties;
 };
 
-interface PartyResponse {
-  data: Party[];
-  errorMsg?: string;
-}
-
-export const getParties = async (startDate?: Date, endDate?: Date): Promise<PartyResponse> => {
-  try {
-    const response = await getAll();
-    return { data: filterPartiesByDate(response, startDate, endDate) };
-  } catch (error: any) {
-    return { data: [], errorMsg: error.message };
-  }
+export const getParties = async (startDate?: Date, endDate?: Date): Promise<Party[]> => {
+  const response = await getAll();
+  return filterPartiesByDate(response, startDate, endDate);
 };
 
 export const filterPartiesByRole = (parties: Party[], roles: string[], permissions: EventLocationPermission[]) => {

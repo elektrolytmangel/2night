@@ -55,12 +55,12 @@ export const ConfigurationManagement = () => {
     <FormProvider {...methods}>
       <div className="admin-management-container">
         <p className="fs-1 text-primary">{t('configuration')}</p>
-        <div className="w-100 ms-2">
+        <div className="w-100">
           <RoleManagement roles={roles} setRoles={setRoles} />
         </div>
         <div>
           <form onSubmit={handleSubmit((data) => onHandleSubmit(data))} className="w-100 admin-form">
-            <p className="fs-3 text-primary ms-2">{t('event_locations')}</p>
+            <p className="fs-3 text-primary ">{t('event_locations')}</p>
             <EventLocationList roles={roles} />
             <CheckboxField
               label={t('is_active')}

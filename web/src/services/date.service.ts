@@ -1,4 +1,4 @@
-export const getMondaFromWeekDay = (date: Date) => {
+export const getMondayFromWeekDay = (date: Date) => {
   const result = new Date(date);
   const day = result.getDay() || 7;
   if (day !== 1) {
@@ -18,10 +18,7 @@ export const getSundayFromWeekDay = (date: Date) => {
   return result;
 };
 
-export const groupByDate = <T>(
-  objs: T[],
-  getDate: (obj: T) => Date
-): Map<string, T[]> => {
+export const groupByDate = <T>(objs: T[], getDate: (obj: T) => Date): Map<string, T[]> => {
   const groupedObjs = new Map<string, T[]>();
 
   objs.forEach((obj) => {

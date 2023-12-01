@@ -1,56 +1,15 @@
-import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { Party } from '../model/app';
-import { getMondaFromWeekDay, getSundayFromWeekDay, groupByDate } from '../services/date.service';
+import useSWR from 'swr';
+import { Loading } from '../components/loading/Loading';
+import { TextMessage } from '../components/text-message/TextMessage';
+import { getMondayFromWeekDay, getSundayFromWeekDay, groupByDate } from '../services/date.service';
 import { getParties } from '../services/party.service';
+import './WeeklyView.css';
 import { Footer } from './footer/Footer';
 import { Header } from './header/Header';
-import { Loading } from '../components/loading/Loading';
 import { PartyCard } from './party-card/PartyCard';
-import { TextMessage } from '../components/text-message/TextMessage';
 import { Weekday } from './weekday/Weekday';
-import './WeeklyView.css';
-
-type State = {
-  date: Date;
-  parties: Party[];
-  isLoading: 'init' | 'loading' | 'done';
-  message: JSX.Element | string;
-};
-
-type Action = {
-  type: 'SET_DATE' | 'SET_PARTIES' | 'SET_LOADING' | 'SET_MESSAGE';
-  payload: any;
-};
-
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case 'SET_DATE':
-      return {
-        ...state,
-        date: action.payload,
-      };
-    case 'SET_PARTIES':
-      return {
-        ...state,
-        parties: action.payload,
-        message: '',
-      };
-    case 'SET_LOADING':
-      return {
-        ...state,
-        isLoading: action.payload,
-      };
-    case 'SET_MESSAGE':
-      return {
-        ...state,
-        message: action.payload,
-      };
-    default:
-      return state;
-  }
-};
 
 const getIniitialDate = (dateQuery: string | null) => {
   if (dateQuery) {
@@ -64,33 +23,15 @@ export const WeeklyView = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const initialDate = getIniitialDate(searchParams.get('date'));
-  const [state, dispatch] = useReducer(reducer, {
-    date: initialDate,
-    parties: [],
-    isLoading: 'init',
-    message: '',
+  const {
+    data: parties,
+    isLoading,
+    error,
+  } = useSWR('parties', () => getParties(getMondayFromWeekDay(initialDate), getSundayFromWeekDay(initialDate)), {
+    fallbackData: [],
   });
 
-  useEffect(() => {
-    const request = async () => {
-      dispatch({ type: 'SET_LOADING', payload: 'loading' });
-      const monday = getMondaFromWeekDay(state.date);
-      const sunday = getSundayFromWeekDay(state.date);
-      const data = await getParties(monday, sunday);
-      dispatch({ type: 'SET_PARTIES', payload: data.data });
-      if (data.errorMsg) {
-        dispatch({ type: 'SET_MESSAGE', payload: t('uups') });
-      } else if (data.data.length === 0) {
-        const msg = <span>{t('seems_calm_week')} 😴</span>;
-        dispatch({ type: 'SET_MESSAGE', payload: msg });
-      }
-      dispatch({ type: 'SET_LOADING', payload: 'done' });
-    };
-
-    request();
-  }, [state.date, t]);
-
-  const sortedData = state.parties.sort((a, b) => {
+  const sortedData = parties.sort((a, b) => {
     return a.startDateTime < b.startDateTime ? -1 : 1;
   });
 
@@ -106,11 +47,12 @@ export const WeeklyView = () => {
     );
   });
 
+  const message = error ? t('uups') : parties.length === 0 ? t('seems_calm_week') : null;
   return (
     <div className="weekly-view">
-      <Header dayInWeek={state.date} />
-      <div className="weekly-view-day-container">{state.isLoading === 'loading' ? <Loading /> : content}</div>
-      <TextMessage>{state.message}</TextMessage>
+      <Header dayInWeek={initialDate} />
+      <div className="weekly-view-day-container">{isLoading ? <Loading /> : content}</div>
+      <TextMessage>{message}</TextMessage>
       <Footer />
     </div>
   );

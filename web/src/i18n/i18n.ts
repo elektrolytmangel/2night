@@ -21,7 +21,7 @@ i18n
         translation: {
           without_warranty: 'Infos without warranty, see ya in the club',
           uups: 'Uups, something went wrong :(. Party probably already started',
-          seems_calm_week: 'Recovery time, nothing is going on this week yet',
+          seems_calm_week: 'Recovery time, keep calm and stay healthy',
           email: 'Email',
           password: 'Password',
           repeat_password: 'Repeat password',
@@ -78,7 +78,7 @@ i18n
           you_are_unauthorized_your_options:
             'You are unauthorized to see this page. Login or SignUp to see this page and contact our support to get the correct access rights for your company.',
           delete: 'Delete',
-          delete_party_question: 'Do you really want to delete this party?',
+          delete_party_question: 'Do you really want to delete "{{text}}"?',
           cancel: 'Cancel',
           we_use_cookies: 'We use cookies to improve your experience on our website.',
           accept: 'Accept',

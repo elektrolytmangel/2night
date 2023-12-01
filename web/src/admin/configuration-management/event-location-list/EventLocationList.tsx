@@ -37,9 +37,9 @@ export const EventLocationList = (props: Props) => {
         <td>{getValues(`eventLocations.${index}.id`)}</td>
         <td>{getValues(`eventLocations.${index}.locationName`)}</td>
         <td>{rolesAllowed}</td>
-        <td style={{ display: 'flex', gap: '0.5rem' }}>
+        <td>
           <button
-            className="btn btn-primary"
+            className="btn btn-primary me-2"
             onClick={() => setEditLocation({ ...location, index })}
             disabled={isAdminOnlyLocation}
           >
@@ -67,10 +67,10 @@ export const EventLocationList = (props: Props) => {
             <th scope="col">{t('id')}</th>
             <th scope="col">{t('location_name')}</th>
             <th scope="col">{t('roles_allowed')}</th>
-            <th scope="col" style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
+            <th scope="col">
               {t('actions')}
               <button
-                className="btn btn-outline-primary"
+                className="btn btn-outline-primary ms-2"
                 onClick={() =>
                   append({
                     id: `${nextId}`,

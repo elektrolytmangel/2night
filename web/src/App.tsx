@@ -28,7 +28,7 @@ function App() {
   }, [dispatch]);
 
   return (
-    <div className="vw-100 vh-100 bg-black" data-bs-theme="dark">
+    <div data-bs-theme="dark">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<WeeklyView />} />

@@ -1,9 +1,9 @@
-import { FaInstagram } from 'react-icons/fa6';
-import { getMondaFromWeekDay, getSundayFromWeekDay } from '../../services/date.service';
-import './Header.css';
 import { DateTime } from 'luxon';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { FaInstagram } from 'react-icons/fa6';
+import { Link } from 'react-router-dom';
+import { getMondayFromWeekDay, getSundayFromWeekDay } from '../../services/date.service';
+import './Header.css';
 
 type Props = {
   dayInWeek: Date;
@@ -11,7 +11,7 @@ type Props = {
 
 export const Header = (props: Props) => {
   const { t } = useTranslation();
-  const monday = DateTime.fromJSDate(getMondaFromWeekDay(props.dayInWeek));
+  const monday = DateTime.fromJSDate(getMondayFromWeekDay(props.dayInWeek));
   const sunday = DateTime.fromJSDate(getSundayFromWeekDay(props.dayInWeek));
 
   return (

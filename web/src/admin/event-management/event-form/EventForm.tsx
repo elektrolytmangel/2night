@@ -5,7 +5,6 @@ import { TextAreaField } from '../../../components/form/text-area-field/TextArea
 import { TextField } from '../../../components/form/text-field/TextField';
 import { useUserContext } from '../../../context/userContext';
 import { EventLocation, EventLocationPermission, Party } from '../../../model/app';
-import { add, update } from '../../../services/firebase-party.service';
 import { filterPermissionsByRoles } from '../../../services/party.service';
 
 interface PartyFormData extends Party {
@@ -15,7 +14,8 @@ interface PartyFormData extends Party {
 type Props = {
   party?: Party;
   eventLocations: EventLocationPermission[];
-  onPartySubmit: () => void;
+  isLoading: boolean;
+  onPartySubmit: (data: Party) => void;
 };
 
 export const EventForm = (props: Props) => {
@@ -31,12 +31,7 @@ export const EventForm = (props: Props) => {
 
   const onHandleSubmit = async (data: PartyFormData) => {
     data.location = props.eventLocations.find((x) => x.id === data.locationId) ?? ({} as EventLocation);
-    if (data.id) {
-      await update(data);
-    } else {
-      await add(data);
-    }
-    props.onPartySubmit();
+    props.onPartySubmit(data);
   };
 
   return (
@@ -91,8 +86,8 @@ export const EventForm = (props: Props) => {
             return { key: x.id, displayText: x.locationName };
           })}
         />
-        <button className="btn btn-primary" type="submit">
-          {t('save')}
+        <button className="btn btn-primary" type="submit" disabled={props.isLoading}>
+          {props.isLoading ? 'loading' : t('save')}
         </button>
       </form>
     </div>

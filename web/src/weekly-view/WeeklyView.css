@@ -1,9 +1,7 @@
 .weekly-view {
-  height: 100%;
   display: flex;
   flex-direction: column;
   padding: 2.5rem 2.5rem 1rem 2.5rem;
-  overflow: auto;
 }
 
 .weekly-view-day-container {
@@ -16,5 +14,4 @@
   .weekly-view-day-container {
     flex-direction: column;
   }
-  
 }
