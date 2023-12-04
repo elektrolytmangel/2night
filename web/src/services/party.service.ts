@@ -1,11 +1,7 @@
-import axios from "axios";
-import { Party } from "../model/party";
+import { EventLocationPermission, Party } from '../model/app';
+import { getAll } from './firebase-party.service';
 
-const EVENTS_URL =
-  process.env.REACT_APP_PARTIES_URL ||
-  "https://raw.githubusercontent.com/elektrolytmangel/2night/party-data/data/data.json";
-
-const filterParties = (parties: Party[], startDate?: Date, endDate?: Date) => {
+const filterPartiesByDate = (parties: Party[], startDate?: Date, endDate?: Date) => {
   if (startDate && endDate) {
     return parties.filter((party) => {
       const partyDate = new Date(party.startDateTime);
@@ -15,25 +11,45 @@ const filterParties = (parties: Party[], startDate?: Date, endDate?: Date) => {
   return parties;
 };
 
-interface PartyResponse {
-  data: Party[];
-  errorMsg?: string;
-}
+export const getParties = async (startDate?: Date, endDate?: Date): Promise<Party[]> => {
+  const response = await getAll();
+  return filterPartiesByDate(response, startDate, endDate);
+};
 
-export const getParties = async (
-  startDate?: Date,
-  endDate?: Date,
-  signal?: AbortSignal
-): Promise<PartyResponse> => {
+export const filterPartiesByRole = (parties: Party[], roles: string[], permissions: EventLocationPermission[]) => {
   try {
-    const response = await axios.get<Party[]>(EVENTS_URL, { signal: signal });
-    if (response.status === 200) {
-      return { data: filterParties(response.data, startDate, endDate) };
+    if (roles.includes('admin')) {
+      return parties;
+    } else {
+      return parties.filter((party) => {
+        const eventLocation = permissions.find((permission) => permission.id === party.location.id);
+        if (eventLocation) {
+          const result = roles.reduce((a, b) => eventLocation.rolesAllowed.includes(b) || a, false);
+          return result;
+        }
+        return false;
+      });
     }
   } catch (error: any) {
-    const msg = error.name !== "CanceledError" ? error.message : "";
-    return { data: [], errorMsg: msg };
+    return [];
   }
+};
 
-  return { data: [], errorMsg: "" };
+export const filterPermissionsByRoles = (roles: string[] | undefined, permissions: EventLocationPermission[]) => {
+  if (!roles) return [];
+  try {
+    if (roles.includes('admin')) {
+      return permissions;
+    } else {
+      return permissions.filter((eventLocation) => {
+        if (eventLocation) {
+          const result = roles.reduce((a, b) => eventLocation.rolesAllowed.includes(b) || a, false);
+          return result;
+        }
+        return false;
+      });
+    }
+  } catch (error: any) {
+    return [];
+  }
 };

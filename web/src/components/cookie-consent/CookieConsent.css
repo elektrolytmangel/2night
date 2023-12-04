@@ -1,0 +1,13 @@
+.cookie-container {
+  position: absolute;
+  display: flex;
+  gap: var(--spacing-m);
+  bottom: 0;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  padding: var(--spacing-s) var(--spacing-m);
+  margin: 0;
+  background-color: var(--bs-primary);
+}
